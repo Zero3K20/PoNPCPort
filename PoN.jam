@@ -1,0 +1,16 @@
+AppClass = app.AppMain
+AppIcon = icon48.gif,icon96.gif
+AppMainTitle = icon160.gif
+AppName = Û¯¸ÏÝ´¸Þ¾Þ P.o.N.
+AppParam = 10000
+AppTrace = 
+AppVer = 1.00.00
+CPName = CAPCOM
+DeniedMultiApp = all
+DrawArea = 240x240
+AppSize = 416943
+PackageURL = ExePoN.jar
+SPsize = 511900
+UseBrowser = launch
+UseNetwork = http
+LastModified = Tue, 28 Jul 2009 16:58:18
