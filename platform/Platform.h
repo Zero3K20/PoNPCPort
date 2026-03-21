@@ -1,10 +1,30 @@
 #pragma once
-// Shared SDL2 includes and game-wide constants for the PC port.
+// Shared Win32 / GDI+ includes and game-wide constants for the PC port.
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <shellapi.h>   // ShellExecute
+#include <objbase.h>    // CoInitializeEx (XAudio2)
+
+// GDI+ ─────────────────────────────────────────────────────────────────────
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
+
+// XAudio2 ──────────────────────────────────────────────────────────────────
+#include <xaudio2.h>
+#pragma comment(lib, "xaudio2.lib")
+#pragma comment(lib, "ole32.lib")
+
+// Windows Imaging Component (WIC) for GIF/PNG/JPG decode ────────────────────
+#include <wincodec.h>
+#pragma comment(lib, "windowscodecs.lib")
+
+#pragma comment(lib, "shell32.lib")
 
 #include <string>
 #include <vector>

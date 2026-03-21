@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{B1C2D3E4-F5A6-7890-BCDE-F01234567891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{C2D3E4F5-A6B7-8901-CDEF-012345678902}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="platform\Audio.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\Font.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\Graphics.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\Image.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\Input.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\Resources.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Attack.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\BtPanel.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\CpCanvas.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\CpDataDownload.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Edit.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Ene.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Folder.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Mail.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\main.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Okimono.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Rock.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Skill.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Tip.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cpp\Waza.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="platform\Audio.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Font.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Graphics.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Image.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Input.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Platform.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="platform\Resources.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Attack.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\BtPanel.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\CpCanvas_fwd.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\CpDataDownload.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Edit.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Ene.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Folder.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Mail.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Okimono.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Rock.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Skill.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Tip.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cpp\Waza.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

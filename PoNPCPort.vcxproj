@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="16.0">
+
+  <!-- ── Configurations ──────────────────────────────────────────────────── -->
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <!-- ── Globals ─────────────────────────────────────────────────────────── -->
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PoNPCPort</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <!-- ── Configuration properties ─────────────────────────────────────────── -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+
+  <!-- ── Compiler / linker settings ────────────────────────────────────────── -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)platform;$(ProjectDir)src\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
+      <Message>Copying game data directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)platform;$(ProjectDir)src\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
+      <Message>Copying game data directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+
+  <!-- ── Source files ──────────────────────────────────────────────────────── -->
+  <ItemGroup>
+    <!-- Platform layer -->
+    <ClCompile Include="platform\Audio.cpp" />
+    <ClCompile Include="platform\Font.cpp" />
+    <ClCompile Include="platform\Graphics.cpp" />
+    <ClCompile Include="platform\Image.cpp" />
+    <ClCompile Include="platform\Input.cpp" />
+    <ClCompile Include="platform\Resources.cpp" />
+    <!-- Game sources -->
+    <ClCompile Include="src\cpp\Attack.cpp" />
+    <ClCompile Include="src\cpp\BtPanel.cpp" />
+    <ClCompile Include="src\cpp\CpCanvas.cpp" />
+    <ClCompile Include="src\cpp\CpDataDownload.cpp" />
+    <ClCompile Include="src\cpp\Edit.cpp" />
+    <ClCompile Include="src\cpp\Ene.cpp" />
+    <ClCompile Include="src\cpp\Folder.cpp" />
+    <ClCompile Include="src\cpp\Mail.cpp" />
+    <ClCompile Include="src\cpp\main.cpp" />
+    <ClCompile Include="src\cpp\Okimono.cpp" />
+    <ClCompile Include="src\cpp\Rock.cpp" />
+    <ClCompile Include="src\cpp\Skill.cpp" />
+    <ClCompile Include="src\cpp\Tip.cpp" />
+    <ClCompile Include="src\cpp\Waza.cpp" />
+  </ItemGroup>
+
+  <!-- ── Header files ──────────────────────────────────────────────────────── -->
+  <ItemGroup>
+    <ClInclude Include="platform\Audio.h" />
+    <ClInclude Include="platform\Font.h" />
+    <ClInclude Include="platform\Graphics.h" />
+    <ClInclude Include="platform\Image.h" />
+    <ClInclude Include="platform\Input.h" />
+    <ClInclude Include="platform\Platform.h" />
+    <ClInclude Include="platform\Resources.h" />
+    <ClInclude Include="src\cpp\Attack.h" />
+    <ClInclude Include="src\cpp\BtPanel.h" />
+    <ClInclude Include="src\cpp\CpCanvas_fwd.h" />
+    <ClInclude Include="src\cpp\CpDataDownload.h" />
+    <ClInclude Include="src\cpp\Edit.h" />
+    <ClInclude Include="src\cpp\Ene.h" />
+    <ClInclude Include="src\cpp\Folder.h" />
+    <ClInclude Include="src\cpp\Mail.h" />
+    <ClInclude Include="src\cpp\Okimono.h" />
+    <ClInclude Include="src\cpp\Rock.h" />
+    <ClInclude Include="src\cpp\Skill.h" />
+    <ClInclude Include="src\cpp\Tip.h" />
+    <ClInclude Include="src\cpp\Waza.h" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

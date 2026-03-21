@@ -1,51 +1,59 @@
 #include "Image.h"
 #include "Graphics.h"
 #include <cstring>
+#include <objidl.h>   // IStream
 
-Image::~Image() {
-    if (ownsTexture && texture) { SDL_DestroyTexture(texture); texture = nullptr; }
-    if (surface) { SDL_FreeSurface(surface); surface = nullptr; }
+// ── Helper: wrap a byte array in a COM IStream ─────────────────────────────
+static IStream* memToStream(const uint8_t* data, size_t len) {
+    HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+    if (!hMem) return nullptr;
+    void* ptr = GlobalLock(hMem);
+    if (!ptr) { GlobalFree(hMem); return nullptr; }
+    std::memcpy(ptr, data, len);
+    GlobalUnlock(hMem);
+    IStream* stream = nullptr;
+    // TRUE → stream takes ownership of hMem and frees it on Release
+    if (FAILED(CreateStreamOnHGlobal(hMem, TRUE, &stream)))
+        GlobalFree(hMem);
+    return stream;
 }
 
-void Image::setRenderer(SDL_Renderer* r) { renderer = r; }
+// ── Image ──────────────────────────────────────────────────────────────────
+Image::~Image() {
+    delete bitmap; bitmap = nullptr;
+}
 
 Image* Image::createImage(int w, int h) {
-    Image* img = new Image();
+    Image* img  = new Image();
     img->width  = w;
     img->height = h;
+    img->bitmap = new Gdiplus::Bitmap(w, h, PixelFormat32bppARGB);
+    // Clear to transparent black
+    Gdiplus::Graphics g(img->bitmap);
+    g.Clear(Gdiplus::Color(0, 0, 0, 0));
     return img;
 }
 
-Image* Image::createFromData(const uint8_t* data, size_t len, SDL_Renderer* r) {
+Image* Image::createFromData(const uint8_t* data, size_t len) {
     Image* img = new Image();
-    img->renderer = r;
-    SDL_RWops* rw = SDL_RWFromConstMem(data, (int)len);
-    if (!rw) return img;
-    img->surface = IMG_Load_RW(rw, 1);
-    if (!img->surface) return img;
-    img->width  = img->surface->w;
-    img->height = img->surface->h;
-    img->uploadSurface();
+    if (!data || !len) return img;
+    IStream* stream = memToStream(data, len);
+    if (!stream) return img;
+    img->bitmap = Gdiplus::Bitmap::FromStream(stream);
+    stream->Release();
+    if (img->bitmap && img->bitmap->GetLastStatus() == Gdiplus::Ok) {
+        img->width  = (int)img->bitmap->GetWidth();
+        img->height = (int)img->bitmap->GetHeight();
+    } else {
+        delete img->bitmap;
+        img->bitmap = nullptr;
+    }
     return img;
-}
-
-void Image::uploadSurface() {
-    if (!surface || !renderer) return;
-    if (texture && ownsTexture) SDL_DestroyTexture(texture);
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    ownsTexture = true;
 }
 
 Graphics* Image::getGraphics() {
-    if (!renderer) return nullptr;
-    if (!texture) {
-        texture = SDL_CreateTexture(renderer,
-                                    SDL_PIXELFORMAT_RGBA32,
-                                    SDL_TEXTUREACCESS_TARGET,
-                                    width, height);
-        ownsTexture = true;
-    }
-    return new Graphics(renderer, texture);
+    if (!bitmap) return nullptr;
+    return new Graphics(bitmap);
 }
 
 // ── Palette ─────────────────────────────────────────────────────────────────
@@ -56,12 +64,12 @@ Palette* Palette::createPalette(int sz) {
 }
 
 void Palette::setEntries(const int* rgb, int offset, int count) {
-    for (int i = 0; i < count && (offset+i) < size; ++i) {
+    for (int i = 0; i < count && (offset + i) < size; ++i) {
         int c = rgb[i];
-        colors[offset+i].r = (c>>16)&0xFF;
-        colors[offset+i].g = (c>> 8)&0xFF;
-        colors[offset+i].b =  c     &0xFF;
-        colors[offset+i].a = 255;
+        colors[offset + i] = Gdiplus::Color(255,
+            (BYTE)((c >> 16) & 0xFF),
+            (BYTE)((c >>  8) & 0xFF),
+            (BYTE)( c        & 0xFF));
     }
 }
 
@@ -70,29 +78,37 @@ PalettedImage* PalettedImage::createImage(const uint8_t* data, int w, int h) {
     PalettedImage* pi = new PalettedImage();
     pi->width  = w;
     pi->height = h;
-    pi->pixels.assign(data, data + w*h);
+    pi->pixels.assign(data, data + w * h);
     return pi;
 }
 
 PalettedImage::~PalettedImage() { delete cachedImage; }
 
-void PalettedImage::processImage(Palette* pal, SDL_Renderer* r) {
+void PalettedImage::processImage(Palette* pal) {
     delete cachedImage;
     cachedImage = nullptr;
-    SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA32);
-    if (!surf) return;
-    Uint32* dst = (Uint32*)surf->pixels;
-    for (int i = 0; i < width*height; ++i) {
-        int idx = pixels[i];
-        SDL_Color col = (pal && idx < pal->size) ? pal->colors[idx] : SDL_Color{0,0,0,255};
-        dst[i] = SDL_MapRGBA(surf->format, col.r, col.g, col.b, col.a);
+
+    Gdiplus::Bitmap* bmp =
+        new Gdiplus::Bitmap(width, height, PixelFormat32bppARGB);
+    Gdiplus::BitmapData bd;
+    Gdiplus::Rect rc(0, 0, width, height);
+    if (bmp->LockBits(&rc, Gdiplus::ImageLockModeWrite, PixelFormat32bppARGB, &bd)
+            == Gdiplus::Ok) {
+        DWORD* dst = (DWORD*)bd.Scan0;
+        for (int i = 0; i < width * height; ++i) {
+            int idx = pixels[i];
+            Gdiplus::Color c =
+                (pal && idx < pal->size) ? pal->colors[idx]
+                                         : Gdiplus::Color(255, 0, 0, 0);
+            dst[i] = c.GetValue();
+        }
+        bmp->UnlockBits(&bd);
     }
-    cachedImage = new Image();
-    cachedImage->renderer = r;
-    cachedImage->surface  = surf;
-    cachedImage->width    = width;
-    cachedImage->height   = height;
-    cachedImage->uploadSurface();
+
+    cachedImage         = new Image();
+    cachedImage->bitmap = bmp;
+    cachedImage->width  = width;
+    cachedImage->height = height;
 }
 
 Image* PalettedImage::getImage() { return cachedImage; }

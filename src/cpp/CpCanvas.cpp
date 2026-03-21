@@ -17,7 +17,7 @@
 #include <cstring>
 #include <ctime>
 #include <algorithm>
-#include <SDL2/SDL.h>
+
 
 // ==================== Static member definitions ====================
 // From CpCanvas_fwd.h
@@ -405,14 +405,14 @@ void CpCanvas::waku() {
 void CpCanvas::exe() {
     int n = 15;
     CpCanvas::imgMap = Image::createImage(240, 240);
-    CpCanvas::imgMap->setRenderer(CpCanvas::g->renderer);
+    CpCanvas::imgMap->setRenderer(CpCanvas::g);
     CpCanvas::graMap = CpCanvas::imgMap->getGraphics();
     CpCanvas::tmp_imgMap = Image::createImage(240, 240);
-    CpCanvas::tmp_imgMap->setRenderer(CpCanvas::g->renderer);
+    CpCanvas::tmp_imgMap->setRenderer(CpCanvas::g);
     CpCanvas::tmp_graMap = CpCanvas::tmp_imgMap->getGraphics();
     for (int _i = 0; _i < 9; ++_i) {
         CpCanvas::imgMap2[_i] = Image::createImage(240, (_i < 6) ? 240 : 68);
-        CpCanvas::imgMap2[_i]->setRenderer(CpCanvas::g->renderer);
+        CpCanvas::imgMap2[_i]->setRenderer(CpCanvas::g);
         CpCanvas::graMap2[_i] = CpCanvas::imgMap2[_i]->getGraphics();
     }
     CpCanvas::g->setOrigin(0, 0);
@@ -421,20 +421,20 @@ void CpCanvas::exe() {
     CpCanvas::graMap->setFont(CpCanvas::f);
     {
         auto _d = Resources::jarResource("0.gif");
-        if (!_d.empty()) CpCanvas::dmy_image = Image::createFromData(_d.data(), _d.size(), CpCanvas::g->renderer);
+        if (!_d.empty()) CpCanvas::dmy_image = Image::createFromData(_d.data(), _d.size());
     }
     SetUp();
     Audio(1, 0);
     CpCanvas::scene = -2;
     CpCanvas::key = 0;
-    CpCanvas::mill = (long long)SDL_GetTicks64();
+    CpCanvas::mill = (long long)GetTickCount64();
     while (true) {
-        SDL_Delay(1);
+        Sleep(1);
         if (!Input::pollEvents()) break;
         CpCanvas::key = Input::getKey();
         Input::clearKey();
-        if ((long long)SDL_GetTicks64() - CpCanvas::mill < (long long)(1000 / (n + 1))) continue;
-        CpCanvas::mill = (long long)SDL_GetTicks64();
+        if ((long long)GetTickCount64() - CpCanvas::mill < (long long)(1000 / (n + 1))) continue;
+        CpCanvas::mill = (long long)GetTickCount64();
         if (CpCanvas::scene == -2) Title2();
         else if (CpCanvas::scene == -1) Test();
         else if (CpCanvas::scene == 0) Title();
@@ -464,9 +464,9 @@ void CpCanvas::exe() {
 
 // ==================== Wait ====================
 void CpCanvas::Wait(int n) {
-    CpCanvas::mill = (long long)SDL_GetTicks64();
-    while ((long long)SDL_GetTicks64() - CpCanvas::mill < (long long)n) {
-        SDL_Delay(1);
+    CpCanvas::mill = (long long)GetTickCount64();
+    while ((long long)GetTickCount64() - CpCanvas::mill < (long long)n) {
+        Sleep(1);
     }
 }
 
@@ -1091,7 +1091,7 @@ void CpCanvas::Title2() {
             CpCanvas::option_flg = 1;
         } else if (CpCanvas::mode == 2) {
             std::string urlStr = CpCanvas::DomeUrl + "/i/party/?uid=NULLGWDOCOMO";
-            SDL_OpenURL(urlStr.c_str());
+            ShellExecuteA(nullptr, "open", urlStr.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
         } else if (CpCanvas::mode == 3) {
             if (CpCanvas::sina_flg == 1) {
                 CpCanvas::mes_flg = 1;
@@ -1966,7 +1966,7 @@ void CpCanvas::BattleMain() {
         }
         if (--CpCanvas::dell_cnt != 10) return;
         Audio(1, 5);
-        CpCanvas::audio_mill = (long long)SDL_GetTicks64();
+        CpCanvas::audio_mill = (long long)GetTickCount64();
         CpCanvas::dell_cnt = -20;
         CpCanvas::key = 0;
         return;
@@ -2634,7 +2634,7 @@ int CpCanvas::PaNo(int n, int n2, int n3, int n4) {
 
 // ==================== MldSet ====================
 void CpCanvas::MldSet() {
-    // Simplified: audio setup is handled differently in SDL2
+    // Simplified: audio setup stub
     try {
         auto _buf = Resources::jarGet(5);
         int _p = 0;
@@ -5350,7 +5350,7 @@ void CpCanvas::syokai() {
             break;
         }
         g->present();
-        SDL_Delay(16);
+        Sleep(16);
         if (!Input::pollEvents()) break;
         key = Input::getKey();
         Input::clearKey();
@@ -5371,8 +5371,8 @@ void CpCanvas::mldAddSet() {
 
 // ==================== dialogDraw ====================
 void CpCanvas::dialogDraw(std::string title, std::string msg) {
-    // stub: show SDL message box
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title.c_str(), msg.c_str(), nullptr);
+    // show message box
+    MessageBoxA(nullptr, msg.c_str(), title.c_str(), MB_OK | MB_ICONINFORMATION);
 }
 
 // ==================== spSave (byte array) ====================

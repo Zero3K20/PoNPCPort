@@ -6,102 +6,107 @@
 #include "../platform/Image.h"
 #include "../platform/Font.h"
 #include "CpCanvas_fwd.h"
-#include <cstdio>
 
-// CpCanvas is declared in CpCanvas_fwd.h; full definition in CpCanvas.cpp
-// We need exe() accessible here - include the full class via fwd header
-// and use extern declaration for the constructor/exe.
-// The exe() method is defined in CpCanvas.cpp and declared in CpCanvas_fwd.h.
+// ── Window procedure ──────────────────────────────────────────────────────
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        Graphics::onPaint(hwnd, hdc);
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+    case WM_CLOSE:
+        PostQuitMessage(0);
+        return 0;
+    default:
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+}
 
-// Forward-declare the exe and constructor so we can call them.
-// CpCanvas_fwd.h already declares the class; CpCanvas.cpp provides the body.
+// ── WinMain ────────────────────────────────────────────────────────────────
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
+    // 1. GDI+ initialisation
+    Gdiplus::GdiplusStartupInput gdiplusInput;
+    ULONG_PTR gdiplusToken = 0;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusInput, nullptr);
 
-// Extend the CpCanvas declaration with the methods we need here.
-// These are implemented in CpCanvas.cpp.
-extern void CpCanvas_exe_impl();  // helper forwarding call
+    // 2. COM initialisation (required by XAudio2)
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
-int main(int argc, char* argv[]) {
-    // 1. SDL initialisation
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
+    // 3. Register window class
+    WNDCLASSEX wc     = {};
+    wc.cbSize         = sizeof(wc);
+    wc.style          = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc    = WndProc;
+    wc.hInstance      = hInst;
+    wc.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wc.hbrBackground  = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    wc.lpszClassName  = L"PoNPCPort";
+    RegisterClassEx(&wc);
+
+    // 4. Calculate window size to fit the 720×720 client area
+    RECT rc = { 0, 0, SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE };
+    AdjustWindowRect(&rc, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, FALSE);
+
+    HWND hwnd = CreateWindowEx(
+        0,
+        L"PoNPCPort",
+        L"PoNPCPort",
+        WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        rc.right - rc.left, rc.bottom - rc.top,
+        nullptr, nullptr, hInst, nullptr);
+
+    if (!hwnd) {
+        CoUninitialize();
+        Gdiplus::GdiplusShutdown(gdiplusToken);
         return 1;
     }
 
-    // 2. Window + renderer (720×720, i.e. 240×3 logical scale)
-    SDL_Window* window = SDL_CreateWindow(
-        "PoNPCPort",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        SCREEN_W * WINDOW_SCALE, SCREEN_H * WINDOW_SCALE,
-        SDL_WINDOW_SHOWN
-    );
-    if (!window) {
-        SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
+    ShowWindow(hwnd, SW_SHOW);
+    UpdateWindow(hwnd);
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
-        SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-    // Scale logical 240×240 up to 720×720
-    SDL_RenderSetLogicalSize(renderer, SCREEN_W, SCREEN_H);
-
-    // 3. SDL_ttf and SDL_image
-    if (TTF_Init() != 0) {
-        SDL_Log("TTF_Init failed: %s", TTF_GetError());
-    }
-    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0) {
-        SDL_Log("IMG_Init failed: %s", IMG_GetError());
-    }
-
-    // 4. Audio + Input subsystems
+    // 5. Audio + Input subsystems
     Audio::init();
     Input::init();
 
-    // 5. Resource layer – data/ subdirectories created by tools/extract_assets.py
+    // 6. Resource layer – data/ subdirectories created by tools/extract_assets.py
     if (!Resources::init("data")) {
-        SDL_Log("Resources::init failed – data/ directory missing");
-        SDL_Log("Run:  python3 tools/extract_assets.py  to unpack PoN.sp / PoN.jar");
+        MessageBoxW(hwnd,
+            L"data\\ directory not found.\n"
+            L"Run tools\\extract_assets.py first to unpack PoN.sp and PoN.jar.",
+            L"PoNPCPort", MB_OK | MB_ICONERROR);
         Input::quit();
         Audio::quit();
-        IMG_Quit();
-        TTF_Quit();
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
+        DestroyWindow(hwnd);
+        CoUninitialize();
+        Gdiplus::GdiplusShutdown(gdiplusToken);
         return 1;
     }
 
-    // 6. Graphics object wrapping the renderer
-    Graphics* gfx = new Graphics(renderer);
+    // 7. Graphics object wrapping the window
+    Graphics* gfx = new Graphics(hwnd);
 
-    // 7. Set the global graphics pointer used by all game classes
+    // 8. Set the global graphics pointer used by all game classes
     CpCanvas::g = gfx;
 
-    // 8. Create CpCanvas (constructor initialises BtPanel array etc.)
+    // 9. Create CpCanvas (constructor initialises BtPanel array etc.)
     CpCanvas* cpCanvas = new CpCanvas();
 
-    // 9. Enter the game loop (returns when SDL_QUIT received)
+    // 10. Enter the game loop (returns when WM_QUIT is received)
     cpCanvas->exe();
 
-    // 10. Cleanup
+    // 11. Cleanup
     delete cpCanvas;
     delete gfx;
 
     Input::quit();
     Audio::quit();
     Resources::quit();
-    IMG_Quit();
-    TTF_Quit();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    CoUninitialize();
+    Gdiplus::GdiplusShutdown(gdiplusToken);
 
     return 0;
 }

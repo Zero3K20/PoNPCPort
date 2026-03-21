@@ -3,42 +3,39 @@
 #include <vector>
 
 class Graphics;
-class Palette;
 
-// SDL2-backed replacement for com.nttdocomo.ui.Image
+// GDI+-backed replacement for com.nttdocomo.ui.Image
 class Image {
 public:
-    SDL_Texture*  texture  = nullptr;
-    SDL_Surface*  surface  = nullptr;
-    SDL_Renderer* renderer = nullptr;
-    int  width      = 0;
-    int  height     = 0;
-    bool ownsTexture = true;
+    Gdiplus::Bitmap* bitmap = nullptr;
+    int  width  = 0;
+    int  height = 0;
 
     ~Image();
 
     static Image* createImage(int w, int h);
-    static Image* createFromData(const uint8_t* data, size_t len, SDL_Renderer* r);
+    static Image* createFromData(const uint8_t* data, size_t len);
+
+    // No-op: retained for call-site compatibility; GDI+ does not need
+    // an explicit renderer/context to be associated with an image.
+    void setRenderer(Graphics* /*g*/) {}
 
     Graphics* getGraphics();
     int getWidth()  const { return width; }
     int getHeight() const { return height; }
-
-    void uploadSurface();
-    void setRenderer(SDL_Renderer* r);
 };
 
-// SDL2-backed replacement for com.nttdocomo.ui.Palette
+// GDI+-backed replacement for com.nttdocomo.ui.Palette
 class Palette {
 public:
-    SDL_Color colors[256] = {};
-    int       size        = 0;
+    Gdiplus::Color colors[256] = {};
+    int            size        = 0;
 
     static Palette* createPalette(int sz);
     void setEntries(const int* rgb, int offset, int count);
 };
 
-// SDL2-backed replacement for com.nttdocomo.ui.PalettedImage
+// GDI+-backed replacement for com.nttdocomo.ui.PalettedImage
 class PalettedImage {
 public:
     std::vector<uint8_t> pixels;
@@ -49,6 +46,6 @@ public:
     static PalettedImage* createImage(const uint8_t* data, int w, int h);
     ~PalettedImage();
 
-    void   processImage(Palette* pal, SDL_Renderer* r);
+    void   processImage(Palette* pal);
     Image* getImage();
 };

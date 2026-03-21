@@ -2,18 +2,18 @@
 #include "Platform.h"
 #include <string>
 
-// SDL2_ttf-backed replacement for com.nttdocomo.ui.Font
+// GDI+-backed replacement for com.nttdocomo.ui.Font
 class Font {
 public:
-    TTF_Font* ttfFont = nullptr;
-    int       height  = 0;
+    Gdiplus::Font*       gdipFont = nullptr;
+    Gdiplus::FontFamily* family   = nullptr;
+    int                  height   = 11;
 
     static Font* getFont(int style);  // style 0 = default
     int  stringWidth(const std::string& s) const;
     int  getHeight()                       const;
     ~Font();
 
-    static const char* DEFAULT_FONT_PATH;
 private:
     Font() = default;
 };
