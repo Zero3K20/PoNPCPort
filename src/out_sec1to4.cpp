@@ -379,6 +379,8 @@ int* CpCanvas::fol_d = nullptr;
 
 // ==================== Constructor ====================
 CpCanvas::CpCanvas() {
+    // Allocate flat panel array (3 rows x 6 cols = 18 slots)
+    CpCanvas::panel = new BtPanel*[18];
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 6; ++j) {
             CpCanvas::panel[i * 6 + j] = new BtPanel();
@@ -4243,10 +4245,12 @@ int CpCanvas::getKeypadState() {
 
 // ==================== SetUp ====================
 void CpCanvas::SetUp() {
-    // Allocate arrays
-    CpCanvas::panel = new BtPanel*[18];
-    for (int i = 0; i < 18; ++i) {
-        CpCanvas::panel[i] = new BtPanel();
+    // panel is allocated in the constructor; only allocate if not yet done
+    if (CpCanvas::panel == nullptr) {
+        CpCanvas::panel = new BtPanel*[18];
+        for (int i = 0; i < 18; ++i) {
+            CpCanvas::panel[i] = new BtPanel();
+        }
     }
     CpCanvas::ene = new Ene*[3];
     CpCanvas::oki = new Okimono*[6];
