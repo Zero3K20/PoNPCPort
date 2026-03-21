@@ -58,7 +58,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
@@ -83,7 +83,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
@@ -95,6 +95,7 @@
   <ItemGroup>
     <!-- Platform layer -->
     <ClCompile Include="platform\Audio.cpp" />
+    <ClCompile Include="platform\compat_com.cpp" />
     <ClCompile Include="platform\Font.cpp" />
     <ClCompile Include="platform\Graphics.cpp" />
     <ClCompile Include="platform\Image.cpp" />
@@ -120,6 +121,7 @@
   <!-- ── Header files ──────────────────────────────────────────────────────── -->
   <ItemGroup>
     <ClInclude Include="platform\Audio.h" />
+    <ClInclude Include="platform\compat_com.h" />
     <ClInclude Include="platform\Font.h" />
     <ClInclude Include="platform\Graphics.h" />
     <ClInclude Include="platform\Image.h" />

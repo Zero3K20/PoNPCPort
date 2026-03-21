@@ -5,6 +5,7 @@
 #include "../platform/Graphics.h"
 #include "../platform/Image.h"
 #include "../platform/Font.h"
+#include "../platform/compat_com.h"
 #include "CpCanvas_fwd.h"
 
 // ── Window procedure ──────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusInput, nullptr);
 
     // 2. COM initialisation (required by XAudio2)
-    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    COM_Init();
 
     // 3. Register window class
     WNDCLASSEX wc     = {};
@@ -60,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
         nullptr, nullptr, hInst, nullptr);
 
     if (!hwnd) {
-        CoUninitialize();
+        COM_Quit();
         Gdiplus::GdiplusShutdown(gdiplusToken);
         return 1;
     }
@@ -81,7 +82,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
         Input::quit();
         Audio::quit();
         DestroyWindow(hwnd);
-        CoUninitialize();
+        COM_Quit();
         Gdiplus::GdiplusShutdown(gdiplusToken);
         return 1;
     }
@@ -105,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int) {
     Input::quit();
     Audio::quit();
     Resources::quit();
-    CoUninitialize();
+    COM_Quit();
     Gdiplus::GdiplusShutdown(gdiplusToken);
 
     return 0;

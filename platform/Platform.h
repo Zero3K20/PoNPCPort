@@ -6,7 +6,6 @@
 #endif
 #include <windows.h>
 #include <shellapi.h>   // ShellExecute
-#include <objbase.h>    // CoInitializeEx (XAudio2)
 
 // GDI+ ─────────────────────────────────────────────────────────────────────
 // Note: NOMINMAX is intentionally NOT defined here. GDI+ (GdiplusTypes.h)
@@ -19,7 +18,6 @@
 // XAudio2 ──────────────────────────────────────────────────────────────────
 #include <xaudio2.h>
 #pragma comment(lib, "xaudio2.lib")
-#pragma comment(lib, "ole32.lib")
 
 // Windows Imaging Component (WIC) for GIF/PNG/JPG decode ────────────────────
 #include <wincodec.h>
