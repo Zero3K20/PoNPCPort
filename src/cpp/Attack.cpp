@@ -723,8 +723,10 @@ lbl_block377_end:;
 lbl_block379_end:;
     if (param[8] != 29) goto lbl_block403_end;
     if (move_cnt != 0) goto lbl_block405_end;
+    {
     int nArray10_tmp[3] = {0, 1, 2};
     for (int i = 0; i < 3; ++i) nArray10[i] = nArray10_tmp[i];
+    }
     for (int i = 0; i < 10; ++i) {
         n64 = (int)((unsigned int)(CpCanvas::rand()) >> 1) % 3;
         n65 = (int)((unsigned int)(CpCanvas::rand()) >> 1) % 3;
@@ -1040,6 +1042,7 @@ void Attack::HitCheck(int n) {
     goto lbl_block21_end;
 lbl_block22_end:;
     if (n != 1) goto lbl_block23_end;
+    {
     int n5 = hit_y;
     while (n5 < 3) {
         int n6 = hit_x;
@@ -1053,6 +1056,7 @@ lbl_block22_end:;
         goto lbl_block21_end;
     }
     goto lbl_block21_end;
+    }
 lbl_block23_end:;
     if (n != 3) goto lbl_block21_end;
     for (int i = hit_x; i < 6 && i >= 0; i += flp * 2 - 1) {

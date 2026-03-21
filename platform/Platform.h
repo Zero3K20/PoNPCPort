@@ -4,14 +4,15 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
 #include <windows.h>
 #include <shellapi.h>   // ShellExecute
 #include <objbase.h>    // CoInitializeEx (XAudio2)
 
 // GDI+ ─────────────────────────────────────────────────────────────────────
+// Note: NOMINMAX is intentionally NOT defined here. GDI+ (GdiplusTypes.h)
+// uses unqualified min/max which are provided as macros by <windows.h>.
+// Our own code uses std::min / std::max with qualified names.
+#include <algorithm>    // std::min, std::max (also ensures C++ overloads visible)
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
@@ -32,7 +33,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <memory>
 
 // ── Screen dimensions (original DoJa display) ──────────────────────────────
