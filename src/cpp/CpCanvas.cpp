@@ -370,6 +370,7 @@ std::string CpCanvas::url = "";
 std::string* CpCanvas::menu_str = nullptr;
 std::string* CpCanvas::soft_str = nullptr;
 int* CpCanvas::sys_dat = nullptr;
+int  CpCanvas::sys_dat_len = 128;
 int* CpCanvas::pa_tip = nullptr;
 std::string* CpCanvas::r_str = nullptr;
 std::string* CpCanvas::t_str2 = nullptr;
@@ -4468,3 +4469,985 @@ bool CpCanvas::qestOK(int n, uint8_t* byArray) {
     return false;
 }
 
+
+// ==================== MakeSh ====================
+void CpCanvas::MakeSh() {
+    graMap->setColor(Graphics::getColorOfRGB(0, 0, 0));
+    graMap->fillRect(0, 0, 240, 240);
+    graMap->setColor(Graphics::getColorOfRGB(168, 168, 168));
+    graMap->fillRect(2, 2, 236, 158);
+    graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+    graMap->fillRect(2, 162, 236, 76);
+    graMap->setColor(Graphics::getColorOfRGB(0, 0, 0));
+    graMap->fillRect(2, 2, 216, 127);
+    graMap->setColor(Graphics::getColorOfRGB(168, 168, 168));
+    graMap->fillRect(2, 2, 215, 126);
+    graMap->setColor(Graphics::getColorOfRGB(112, 112, 112));
+    graMap->fillRect(3, 3, 214, 125);
+    graMap->setColor(Graphics::getColorOfRGB(136, 136, 136));
+    graMap->fillRect(3, 3, 213, 124);
+    graMap->setColor(Graphics::getColorOfRGB(248, 240, 200));
+    graMap->fillRect(7, 7, 205, 116);
+    graMap->setColor(Graphics::getColorOfRGB(232, 224, 192));
+    graMap->fillRect(7, 25, 205, 16);
+    graMap->fillRect(7, 57, 205, 16);
+    graMap->fillRect(7, 89, 205, 16);
+    graMap->setColor(Graphics::getColorOfRGB(240, 240, 248));
+    graMap->fillRect(3, 130, 142, 29);
+    graMap->setColor(Graphics::getColorOfRGB(136, 136, 144));
+    graMap->fillRect(4, 131, 140, 20);
+    graMap->setColor(Graphics::getColorOfRGB(96, 96, 104));
+    graMap->fillRect(4, 151, 140, 7);
+    drawImg3(44, 112, 5, 133, true);
+    drawImg3(44, 113, 76, 133, true);
+    drawImg3(44, 111, 70, 152, true);
+    drawImg3(44, 48, 147, 129, true);
+    if (shop_syu == 1) {
+        drawImg3(44, 51, 151, 132, true);
+        drawImg3(44, 43, 222, 146, true);
+    } else {
+        drawImg3(44, 50, 151, 132, true);
+        drawImg3(44, 42, 222, 146, true);
+    }
+    tmp_graMap->setColor(Graphics::getColorOfRGB(136, 136, 144));
+    tmp_graMap->fillRect(0, 0, 140, 20);
+    tmp_graMap->setColor(Graphics::getColorOfRGB(96, 96, 104));
+    tmp_graMap->fillRect(0, 20, 140, 7);
+    drawImg4(44, 117, 1, 2);
+    drawImg4(44, 113, 72, 2);
+    tmp_graMap->setColor(Graphics::getColorOfRGB(136, 136, 144));
+    tmp_graMap->fillRect(0, 30, 140, 20);
+    tmp_graMap->setColor(Graphics::getColorOfRGB(96, 96, 104));
+    tmp_graMap->fillRect(0, 50, 140, 7);
+}
+
+// ==================== ReadSh ====================
+void CpCanvas::ReadSh(int n) {
+    shop_id = n;
+    uint8_t byArray[4];
+    if (n < 8) {
+        int n2, n3;
+        shop_syu = n / 6;
+        auto _buf = JarGet(34);
+        int _p = 0;
+        if (sh_zai[0][0] == 0) {
+            for (n3 = 0; n3 < 8; ++n3) {
+                for (n2 = 0; n2 < 12; n2 += 4) {
+                    if (_p + 4 > (int)_buf.size()) break;
+                    sh_zai[n3][n2]     = _buf[_p+3];
+                    sh_zai[n3][n2+1]   = _buf[_p+2];
+                    sh_zai[n3][n2+2]   = _buf[_p+1];
+                    sh_zai[n3][n2+3]   = _buf[_p+0];
+                    _p += 4;
+                }
+            }
+        } else {
+            _p += 96;
+        }
+        _p += 48 * n;
+        for (n3 = 0; n3 < 12; ++n3) {
+            if (_p + 4 > (int)_buf.size()) break;
+            int n4 = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
+            _p += 4;
+            sh_syu[n3] = n4 & 0xF;
+            sh_id[n3]  = (n4 >> 4) & 0x3FF;
+            sh_kin[n3] = (n4 >> 14) & 0xFFFF;
+        }
+    } else {
+        shop_syu = 2;
+        auto _buf = JarGet(16);
+        int _p = 0;
+        for (int i = 0; i < 175; ++i) {
+            if (_p + 4 > (int)_buf.size()) break;
+            int n4 = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
+            _p += 4;
+            sh_syu[i] = 0;
+            sh_id[i]  = n4 & 0xFFFF;
+            sh_kin[i] = (n4 >> 16) & 0xFFFF;
+        }
+    }
+    sel_tip2 = 0;
+    sel_jou2 = 0;
+    ShSort();
+}
+
+// ==================== ShSort ====================
+void CpCanvas::ShSort() {
+    int n = 0;
+    if (shop_syu != 2) {
+        for (int i = 0; i < 12; ++i) {
+            sh_list[i] = 0;
+            if (sh_zai[shop_id][i] <= 0) continue;
+            sh_list[n] = i;
+            ++n;
+        }
+    } else {
+        for (int i = 0; i < 175; ++i) {
+            sh_list[i] = 0;
+            if (get_list[i + 2] <= 0) continue;
+            sh_list[n] = i;
+            ++n;
+        }
+    }
+    zai_cnt = n;
+    if (zai_cnt >= 7 && zai_cnt - sel_jou2 < 7) {
+        --sel_tip2;
+        --sel_jou2;
+    }
+    if (zai_cnt <= sel_tip2) {
+        --sel_tip2;
+    }
+}
+
+// ==================== TrIO ====================
+void CpCanvas::TrIO(int n) {
+    if (n == 0) {
+        GetItem(0, 0, set_t[--in_cnt]);
+        set_t[in_cnt] = 0;
+    }
+    if (n == 1) {
+        set_t[in_cnt] = sort_list[sel_tip2];
+        if (GetItem(0, 1, sort_list[sel_tip2]) == 1) {
+            if (get_tip >= 7 && get_tip - sel_jou2 < 7) {
+                --sel_tip2;
+                --sel_jou2;
+            }
+            if (get_tip <= sel_tip2) {
+                --sel_tip2;
+            }
+        }
+        ++in_cnt;
+    }
+}
+
+// ==================== GetTr ====================
+int CpCanvas::GetTr(int n) {
+    int nArray[12] = {34, 54, 63, 64, 8, 26, 51, 63, 0, 12, 37, 62};
+    int n3 = (int)((unsigned int)(rand()) >> 1) % 64;
+    int n4 = 0;
+    int n2;
+    for (n2 = 0; n2 < 4; ++n2) {
+        n4 = n2 + 1;
+        if (n3 < nArray[n2 + n * 4]) break;
+        ++n4;
+    }
+    n2 = 0;
+    int nArray2[283];
+    while (n2 == 0) {
+        for (int i = 0; i < 283; ++i) {
+            if ((tr_list[i] >> 16 & 0xF) != n4 || (tr_list[i] & 0xFFFF) == 0) continue;
+            nArray2[n2] = i;
+            ++n2;
+        }
+        --n4;
+    }
+    n3 = (int)((unsigned int)(rand()) >> 1) % n2;
+    return tr_list[nArray2[n3]] & 0xFFFF;
+}
+
+// ==================== MakeZoku ====================
+void CpCanvas::MakeZoku() {
+    graMap->setColor(Graphics::getColorOfRGB(0, 0, 0));
+    graMap->fillRect(0, 0, 240, 240);
+    graMap->setColor(Graphics::getColorOfRGB(72, 96, 120));
+    graMap->fillRect(2, 2, 236, 158);
+    graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+    graMap->fillRect(2, 162, 236, 76);
+    graMap->setColor(Graphics::getColorOfRGB(0, 0, 0));
+    graMap->fillRect(2, 2, 216, 127);
+    graMap->setColor(Graphics::getColorOfRGB(240, 248, 248));
+    graMap->fillRect(2, 2, 215, 126);
+    graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+    graMap->fillRect(3, 3, 214, 125);
+    graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+    graMap->fillRect(3, 3, 213, 124);
+    graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+    graMap->fillRect(7, 7, 205, 116);
+    graMap->setColor(Graphics::getColorOfRGB(240, 240, 248));
+    graMap->fillRect(3, 130, 142, 29);
+    graMap->setColor(Graphics::getColorOfRGB(136, 136, 144));
+    graMap->fillRect(4, 131, 140, 20);
+    graMap->setColor(Graphics::getColorOfRGB(96, 96, 104));
+    graMap->fillRect(4, 151, 140, 7);
+    drawImg3(44, 48, 147, 129, true);
+    drawImg3(44, 51, 151, 132, true);
+    drawImg3(44, 43, 222, 146, true);
+    drawImg3(44, 113, 5, 132, true);
+    for (int i = 0; i < 5; ++i) {
+        drawImg3(44, 25 + i, 15 + 26 * i, 141, true);
+    }
+    sel_tip2 = 0;
+    sel_jou2 = 0;
+}
+
+// ==================== IventSet ====================
+void CpCanvas::IventSet(int n) {
+    ++ivent_cnt;
+    ivent_flg = 0;
+    if (n == 0) {
+        MesRead(i_id[2], nullptr, i_id[1]);
+        if (ivent_syu == 1 && i_id[0] > 19) {
+            i_id[0] = i_id[0] + 100;
+        }
+        ivent_flg = 1;
+    } else if (n == 1) {
+        yure = 0;
+        if (i_id[0] != 10 && i_id[0] != 11) {
+            kouka_flg = i_id[0];
+            kouka_cnt = i_id[1];
+        }
+        if (i_id[0] == 12) Audio(1, 13);
+        if (i_id[0] == 11) { Audio(i_id[1], i_id[2]); kouka_cnt = 0; }
+        if (i_id[0] == 13) {
+            i_id[3] = i_id[2] * 30 + 124;
+            i_id[2] = i_id[1] * 30 + 120;
+            i_x[4]  = i_id[1] * 30 + 125;
+            i_y[4]  = i_id[2] * 30 + 130;
+            kouka_cnt = 0;
+        }
+        if (i_id[0] == 14) {
+            kouka_flg = i_id[0];
+            MesRead(i_id[2], nullptr, i_id[3]);
+            kouka_cnt = i_id[1];
+        }
+        if (i_id[0] == 10 || (i_id[0] > 5 && i_id[0] < 9) || i_id[0] == 13 || i_id[0] == 14) {
+            ivent_flg = 1;
+        }
+    } else if (n == 2) {
+        if (i_id[0] == 0) {
+            if (i_id[3] == 10) {
+                talk_flg[i_id[1]][i_id[2]] += 1;
+            } else {
+                talk_flg[i_id[1]][i_id[2]] = i_id[3];
+            }
+            if (talk_flg[i_id[1]][i_id[2]] > 4 || talk_flg[i_id[1]][i_id[2]] < 0) {
+                talk_flg[i_id[1]][i_id[2]] = 0;
+            }
+            talk_cnt = CharaCnt();
+        } else if (i_id[0] == 1) {
+            if (i_id[2] < 4) {
+                item_flg[i_id[1]][i_id[2]] = i_id[3];
+                if (map_no == i_id[1]) {
+                    int n3 = (m_item[i_id[2]][2] - 120) / 30;
+                    int n4 = (m_item[i_id[2]][3] - 124) / 30;
+                    m_data[n4 * 24 + n3] = (i_id[3] == 0) ? 1 : 32 + i_id[2];
+                }
+            } else if (i_id[2] < 6) {
+                tobi_flg[i_id[1]][i_id[2] - 4] = i_id[3];
+                if (map_no == i_id[1]) {
+                    int n5 = (m_tobi[i_id[2]-4][3] - 120) / 30;
+                    int n6 = (m_tobi[i_id[2]-4][4] - 124) / 30;
+                    m_data[n6 * 24 + n5] = (i_id[3] == 0) ? 1 : 64 + i_id[2] - 4;
+                }
+            } else {
+                chara_flg[i_id[1]][i_id[2] - 6] = i_id[3];
+                if (map_no == i_id[1]) {
+                    int n7 = (m_chara[i_id[2]-6][4] - 120) / 30;
+                    int n8 = (m_chara[i_id[2]-6][5] - 124) / 30;
+                    m_data[n8 * 24 + n7] = (i_id[3] == 0) ? 1 : 128 + i_id[2] - 6;
+                }
+            }
+        } else if (i_id[0] == 3) {
+            if (i_id[2] == 0) {
+                if (move_ok[i_id[1]] < i_id[3]) move_ok[i_id[1]] = i_id[3];
+            } else if (plg_ok[i_id[1]] < i_id[3]) {
+                plg_ok[i_id[1]] = i_id[3];
+            }
+        } else if (i_id[0] == 4) {
+            talk_ch[0] = i_id[1]; talk_ch[1] = i_id[2]; talk_ch[2] = i_id[3];
+            if (ivent_syu == 1) { talk_ch[1] += 100; talk_ch[2] += 100; }
+        } else if (i_id[0] == 5) {
+            yes_no_flg = 1;
+            jump_ivent = i_id[2];
+        } else if (i_id[0] > 5 && i_id[0] < 10) {
+            if (i_id[0] == 9) i_id[2] = i_id[2] + (user_id + ivent_id) % 5;
+            if (i_id[0] == 7) i_id[2] = i_id[2] * 100;
+            GetItem(i_id[0] - 6, i_id[1], i_id[2]);
+        } else if (i_id[0] == 10) {
+            map_x = i_id[1] * 30 + 15;
+            map_y = i_id[2] * 30 + 8;
+            muki = i_id[3];
+        } else if (i_id[0] == 11) {
+            IventRead(i_id[2], ivent_syu);
+            ivent_flg = 1;
+        } else if (i_id[0] == 12) {
+            GetItem(5, 0, i_id[1]);
+        } else if (i_id[0] == 13) {
+            mail_suu = i_id[1];
+            if (mail_suu > 18) mail_suu = 18;
+            mail_flg = 1;
+            mail_cnt = 0;
+        } else if (i_id[0] == 14) {
+            navi_flg[i_id[1]] += 1;
+            if (navi_flg[i_id[1]] > 3) navi_flg[i_id[1]] = 3;
+        } else if (i_id[0] == 15) {
+            skill_flg = 1;
+        } else if (i_id[0] == 16) {
+            GetItem(6, 0, 0);
+        } else if (i_id[0] == 17) {
+            GetItem(7, 0, 0);
+        } else if (i_id[0] == 18) {
+            if (++fol_suu > 3) fol_suu = 3;
+        } else if (i_id[0] == 19) {
+            quest_flg = 1;
+        } else if (i_id[0] == 20) {
+            sina_flg = 1;
+        } else if (i_id[0] == 21) {
+            warp_flg = 1; warp_cnt = 1;
+        } else if (i_id[0] > 21 && i_id[0] < 26) {
+            i_set[i_id[0]-22] = i_id[1];
+            i_x[i_id[0]-22]   = i_id[2] * 30 + 120;
+            i_y[i_id[0]-22]   = i_id[3] * 30 + 124;
+        } else if (i_id[0] == 26) {
+            eff_cnt = 1;
+            teki_pt = i_id[2];
+            if (i_id[2] >= 300) teki_pt += navi_flg[i_id[1]];
+            come_back = i_id[3];
+            tmp_hp = now_hp;
+            ivent_flg = 1;
+        } else if (i_id[0] == 27) {
+            ren_flg = 1; ren_id = i_id[1];
+            eff_cnt = 1;
+            teki_pt = teki_ren[ren_id][0];
+            come_back = i_id[3];
+            tmp_hp = now_hp;
+            ivent_flg = 1;
+        } else if (i_id[0] == 28) {
+            bool bl = false;
+            if (i_id[3]==0 && zenny >= i_id[2]*100) bl=true;
+            if (i_id[3]==1 && get_tip2[0]+get_tip2[1]+get_tip2[2] >= i_id[2]) bl=true;
+            if (i_id[3]==2 && get_tip2[0] >= i_id[2]) bl=true;
+            if (i_id[3]==3 && get_tip2[1] >= i_id[2]) bl=true;
+            if (i_id[3]==4 && get_tip2[2] >= i_id[2]) bl=true;
+            if (i_id[3]==5 && piece >= i_id[2]) bl=true;
+            if (i_id[3]==6 && navi_flg[i_id[2]%100] < i_id[2]/100) bl=true;
+            if (i_id[3]==7 && win_flg != 0) bl=true;
+            if (i_id[3]==8 && (tip_list[i_id[2]] >> 16 & 0xFF) > 0) bl=true;
+            if (i_id[3]==9 && s_hen >= i_id[2]) bl=true;
+            if (i_id[3]==10 && q_hen >= i_id[2]) bl=true;
+            if (i_id[3]==11 && s_hen == i_id[2]) bl=true;
+            if (i_id[3]==12 && q_hen == i_id[2]) bl=true;
+            if (i_id[3]==13 && dat[58] != 0) bl=true;
+            if (i_id[3]==14 && dat[63] != 0) bl=true;
+            if (bl) IventRead(i_id[1], ivent_syu);
+        } else if (i_id[0] == 29) {
+            if (i_id[2] == 0) {
+                machi_no = i_id[1];
+                MachiSet(machi_no, 1);
+            } else {
+                machi_damy_flg = -1;
+                if (i_id[1] < 31) {
+                    ImgSet2(i_id[1]);
+                    MachiSet(i_id[1], 0);
+                    ivent_flg = 0;
+                    machi_damy_flg = i_id[1];
+                }
+            }
+        } else if (i_id[0] == 30) {
+            if (i_id[1]==0) ++s_hen;
+            if (i_id[1]==1) --s_hen;
+            if (i_id[1]==2) s_hen = i_id[2];
+        } else if (i_id[0] == 31) {
+            if (i_id[1]==0) ++q_hen;
+            if (i_id[1]==1) --q_hen;
+            if (i_id[1]==2) q_hen = i_id[2];
+        } else if (i_id[0] == 32) {
+            teki_ren[i_id[1]][i_id[3]]   = i_id[2];
+            teki_ren[i_id[1]][i_id[3]+1] = 0;
+        }
+    } else if (n == 3) {
+        if (i_id[0] == 0) {
+            ivent_end = i_id[1];
+            if (i_id[1]==0) ivent_end = 0;
+            else if (i_id[1]==1) ivent_end = 2;
+        }
+        if (i_id[0] == 1) { ReadSh(i_id[1]); MakeSh(); ivent_end = 4; }
+        if (i_id[0] == 2) { MakeTr(); ReadTr(i_id[1]); ivent_end = 5; }
+        if (i_id[0] == 3) {
+            ReadTr(2);
+            get_tr = GetTr(2);
+            GetItem(0, 0, get_tr);
+            Save(0);
+            str = ItemName(0, get_tr);
+            MesRead(0, (uint8_t*)str.data(), 3);
+            Audio(1, 11);
+            ivent_end = 7;
+        }
+        if (i_id[0] == 4) ivent_end = 10;
+        if (i_id[0] == 5) { ivent_end = 6; MakeZoku(); }
+        ivent_flg = -1;
+    }
+}
+
+// ==================== Ivent ====================
+int CpCanvas::Ivent(int n) {
+    int n2 = 1;
+    if (ivent_flg < 0) return -1;
+    Kouka(kouka_flg);
+    if (n == 0) {
+        FaceDraw(i_id[0]);
+        bool bl = MesDraw(0);
+        if (key == 65536) {
+            if (yes_no_flg != 0) yes_no_flg = 1;
+            key = 0;
+        } else if (key == 262144) {
+            if (yes_no_flg != 0) yes_no_flg = 2;
+            key = 0;
+        } else if (key == 0x100000) {
+            if (bl) n2 = 0;
+            else mes_cnt = 90;
+            key = 0;
+        }
+        if (yes_no_flg != 0 && n2 == 0) {
+            if (yes_no_flg == 1) { IventRead(jump_ivent, ivent_syu); jump_ivent = 0; }
+            yes_no_flg = 0;
+        }
+    } else if (n == 1) {
+        i_id[1] = i_id[1] - 1;
+        if (i_id[1] == 0) n2 = 0;
+    } else if (n == 2) {
+        n2 = 0;
+    } else if (n == 3) {
+        n2 = 0;
+    }
+    return n2;
+}
+
+// ==================== Kouka ====================
+void CpCanvas::Kouka(int n) {
+    if (n == 0) return;
+    if (n == 1) {
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        g->fillRect(0, 0, 240, 160);
+    } else if (n == 2) {
+        g->setColor(Graphics::getColorOfRGB(255, 255, 255));
+        g->fillRect(0, 0, 240, 160);
+    } else if (n == 3) {
+        if (game_cnt % 3 != 0) {
+            g->setColor(Graphics::getColorOfRGB(255, 255, 255));
+            g->fillRect(0, 0, 240, 240);
+        }
+    } else if (n == 4) {
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        g->fillRect(0, 0, 240, 240);
+    } else if (n == 5) {
+        g->setColor(Graphics::getColorOfRGB(255, 255, 255));
+        g->fillRect(0, 0, 240, 240);
+    } else if (n == 6) {
+        ++kouka_cnt;
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        for (int i = 0; i < 12; ++i) {
+            g->fillRect(0, i * 20 + 10 - kouka_cnt, 240, kouka_cnt * 2);
+        }
+        if (kouka_cnt > 10) { kouka_flg = 4; i_id[1] = 1; }
+    } else if (n == 7) {
+        --kouka_cnt;
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        for (int i = 0; i < 10; ++i) {
+            g->fillRect(0, i * 24 + 12 - kouka_cnt, 240, kouka_cnt * 2);
+        }
+        i_id[1] = 10;
+        if (kouka_cnt == 0) { kouka_flg = 0; i_id[1] = 1; }
+    } else if (n == 8) {
+        if (PlgEfe(++kouka_cnt, 0)) { kouka_flg = 5; i_id[1] = 1; }
+        else i_id[1] = 10;
+    } else if (n == 9) {
+        yure = (game_cnt % 4 - 1) * (1 - game_cnt % 4 / 3);
+    } else if (n == 12) {
+        drawImg3(44, 109, 5 + game_cnt / 2 % 3, 5, false);
+    } else if (n == 13) {
+        Ani(37, 4, kouka_cnt % 7, i_id[2] - map_x, i_id[3] - map_y);
+        if (kouka_cnt > 3) Ani(37, 4, (kouka_cnt-4)%7, i_x[4]-map_x, i_y[4]-map_y);
+        if (kouka_cnt % 7 == 6) {
+            i_id[2] += (int)((unsigned int)(rand())>>1) % 10 - 5;
+            i_id[3] += (int)((unsigned int)(rand())>>1) % 10 - 5;
+        }
+        if ((kouka_cnt-4) % 7 == 6) {
+            i_x[4] += (int)((unsigned int)(rand())>>1) % 10 - 5;
+            i_y[4] += (int)((unsigned int)(rand())>>1) % 10 - 5;
+        }
+        i_id[1] = 10;
+        if (kouka_cnt == 14) { kouka_flg = 0; i_id[1] = 1; }
+        ++kouka_cnt;
+    } else if (n == 14) {
+        i_id[1] = 10;
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        g->fillRect(0, 0, 240, 240);
+        if (MesDraw2(0, 30, 90, 255)) --kouka_cnt;
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        g->fillRect(0, 200, 240, 240);
+        if (kouka_cnt == 0) { kouka_flg = 4; i_id[1] = 1; }
+    }
+}
+
+// ==================== FaceDraw2 ====================
+void CpCanvas::FaceDraw2(int n, int n2, int n3) {
+    if (n % 100 == 31) return;
+    n2 += yure;
+    if (n < 100) g->setColor(Graphics::getColorOfRGB(255, 255, 255));
+    else g->setColor(Graphics::getColorOfRGB(255, 255, 0));
+    g->fillRect(n2 - 1, n3 - 1, 40, 46);
+    if (n < 20) drawImg3(47, n, n2, n3, false);
+    else if (n < 100) drawImg3(49, n - 20, n2, n3, false);
+    else drawImg3(50, n - 120, n2, n3, false);
+}
+
+// ==================== MenuMake ====================
+void CpCanvas::MenuMake(int n) {
+    if (n == 0) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 47, 125, 10, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(4, 20, 232, 136);
+        for (int n2 = 0; n2 < 6; ++n2) {
+            drawImg3(44, 52, 34, 28 + n2 * 21, true);
+            graMap->setColor(Graphics::getColorOfRGB(72, 96, 120));
+            strDrawG(menu_str[n2], 37, 43 + n2 * 21);
+            graMap->setColor(Graphics::getColorOfRGB(208, 208, 208));
+            strDrawG(menu_str[n2], 36, 42 + n2 * 21);
+        }
+        for (int n2 = 0; n2 < 3; ++n2) {
+            drawImg3(44, 48, 138, 27 + n2 * 35, true);
+            drawImg3(44, 49 + n2, 143, 30 + n2 * 35, true);
+        }
+        drawImg3(44, 64, 182, 42, true);
+        drawImg3(44, 42, 212, 80, true);
+        drawImg3(44, 43, 212, 115, true);
+    } else if (n == 1) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 46, 8, 8, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(4, 20, 232, 136);
+        drawImg3(44, 1, 27, 28, true);
+        drawImg3(44, 2, 127, 28, true);
+        graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+        graMap->fillRect(30, 37, 178, 112);
+        drawImg3(44, 4, 28, 21, true);
+        drawImg3(44, 5, 35, 21, true);
+        drawImg3(44, 5, 46, 21, true);
+        drawImg3(44, 6, 114, 21, true);
+        if (fol_suu > 1) {
+            for (int i = 0; i < fol_suu; ++i) {
+                drawImg3(44, 20, 135 + i * 22, 21, true);
+                drawImg3(44, 22 + i, 141 + i * 22, 27, true);
+            }
+            drawImg3(44, 31, 18, 89, true);
+            drawImg3(44, 30, 214, 89, true);
+        }
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(36, 37, 164, 112);
+        drawImg3(44, 3, 200, 37, true);
+        drawImg3(44, 68, 201, 26, true);
+        drawImg3(44, 69, 201, 144, true);
+    } else if (n == 2) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 45, 8, 8, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(0, 20, 240, 136);
+        drawImg3(44, 1, 0, 28, true);
+        drawImg3(44, 2, 154, 28, true);
+        graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+        graMap->fillRect(3, 37, 232, 112);
+        drawImg3(44, 4, 1, 21, true);
+        drawImg3(44, 5, 9, 21, true);
+        drawImg3(44, 5, 78, 21, true);
+        drawImg3(44, 5, 88, 21, true);
+        drawImg3(44, 6, 157, 21, true);
+        drawImg3(44, 44, 13, 37, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(65, 37, 162, 112);
+        drawImg3(44, 3, 227, 37, true);
+        drawImg3(44, 68, 228, 26, true);
+        drawImg3(44, 69, 228, 144, true);
+        graMap->setColor(Graphics::getColorOfRGB(32, 40, 81));
+        strDrawG(menu_str[6] + std::to_string(menu_sel + 1), 66, 35);
+        graMap->setColor(Graphics::getColorOfRGB(68, 80, 138));
+        strDrawG(menu_str[6] + std::to_string(menu_sel + 1), 65, 35);
+        drawImg3(44, 18, 127, 30, true);
+        graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+        graMap->fillRect(174, 21, 49, 15);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(175, 22, 47, 13);
+        drawImg3(44, 120, 12, 135, true);
+    } else if (n == 3) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 45, 144, 8, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(0, 20, 240, 136);
+        drawImg3(44, 1, 0, 28, true);
+        drawImg3(44, 2, 154, 28, true);
+        graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+        graMap->fillRect(3, 37, 232, 112);
+        drawImg3(44, 4, 126, 21, true);
+        drawImg3(44, 5, 134, 21, true);
+        drawImg3(44, 5, 160, 21, true);
+        drawImg3(44, 6, 229, 21, true);
+        drawImg3(44, 44, 190, 37, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(6, 37, 175, 112);
+        graMap->setColor(Graphics::getColorOfRGB(32, 40, 81));
+        strDrawG(menu_str[7], 133, 35);
+        graMap->setColor(Graphics::getColorOfRGB(68, 80, 138));
+        strDrawG(menu_str[7], 132, 35);
+        drawImg3(44, 3, 181, 37, true);
+        drawImg3(44, 68, 182, 26, true);
+        drawImg3(44, 69, 182, 144, true);
+    } else if (n == 4) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 70, 8, 8, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(0, 20, 240, 136);
+        drawImg3(44, 1, 0, 28, true);
+        drawImg3(44, 2, 154, 28, true);
+        graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+        graMap->fillRect(3, 37, 232, 112);
+        drawImg3(44, 4, 1, 21, true);
+        drawImg3(44, 5, 9, 21, true);
+        drawImg3(44, 5, 78, 21, true);
+        drawImg3(44, 5, 88, 21, true);
+        drawImg3(44, 6, 157, 21, true);
+        drawImg3(44, 44, 13, 37, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(65, 37, 162, 112);
+        drawImg3(44, 3, 227, 37, true);
+        drawImg3(44, 68, 228, 26, true);
+        drawImg3(44, 69, 228, 144, true);
+        graMap->setColor(Graphics::getColorOfRGB(32, 40, 81));
+        strDrawG(menu_str[8 + menu_sel], 16, 35);
+        graMap->setColor(Graphics::getColorOfRGB(68, 80, 138));
+        strDrawG(menu_str[8 + menu_sel], 15, 35);
+        graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+        graMap->fillRect(163, 21, 65, 15);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(164, 22, 63, 13);
+        drawImg3(44, 64, 191, 23, true);
+    } else if (n == 5) {
+        drawImg3(44, 0, 0, 0, true);
+        drawImg3(44, 76, 8, 8, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(0, 20, 240, 136);
+        drawImg3(44, 1, 0, 28, true);
+        drawImg3(44, 2, 154, 28, true);
+        graMap->setColor(Graphics::getColorOfRGB(200, 224, 248));
+        graMap->fillRect(3, 37, 232, 112);
+        drawImg3(44, 4, 1, 21, true);
+        drawImg3(44, 5, 9, 21, true);
+        drawImg3(44, 5, 78, 21, true);
+        drawImg3(44, 5, 88, 21, true);
+        drawImg3(44, 6, 157, 21, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 216));
+        graMap->fillRect(13, 37, 43, 112);
+        graMap->setColor(Graphics::getColorOfRGB(96, 112, 192));
+        for (int i = 0; i < 8; ++i) graMap->fillRect(13, 51 + i/2*28, 43, 14);
+        drawImg3(44, 3, 56, 37, true);
+        graMap->setColor(Graphics::getColorOfRGB(96, 112, 192));
+        graMap->fillRect(67, 37, 164, 9);
+        drawImg3(44, 77, 68, 39, true);
+        graMap->setColor(Graphics::getColorOfRGB(120, 152, 218));
+        graMap->fillRect(67, 48, 164, 62);
+        graMap->setColor(Graphics::getColorOfRGB(240, 248, 248));
+        graMap->fillRect(231, 37, 1, 9);
+        graMap->fillRect(231, 48, 1, 84);
+        graMap->fillRect(67, 110, 164, 22);
+        drawImg3(44, 78, 122, 56, true);
+        drawImg3(44, 79, 122, 79, true);
+        drawImg3(44, 83, 67, 104, true);
+        graMap->setColor(Graphics::getColorOfRGB(32, 40, 81));
+        strDrawG(menu_str[19 + menu_sel], 16, 35);
+        graMap->setColor(Graphics::getColorOfRGB(68, 80, 138));
+        strDrawG(menu_str[19 + menu_sel], 15, 35);
+    }
+    graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+    graMap->fillRect(2, 162, 236, 76);
+    key = 0;
+}
+
+// ==================== MakeSort ====================
+void CpCanvas::MakeSort() {
+    tmp_graMap->setColor(Graphics::getColorOfRGB(0, 0, 0));
+    tmp_graMap->fillRect(0, 0, 128, 240);
+    drawImg4(44, 94, 0, 0);
+    drawImg4(44, 95, 0, 11);
+    drawImg4(44, 95, 0, 39);
+    drawImg4(44, 95, 0, 67);
+    drawImg4(44, 95, 0, 95);
+    drawImg4(44, 96, 0, 123);
+    tmp_graMap->setColor(Graphics::getColorOfRGB(255, 255, 255));
+    for (int i = 0; i < 7; ++i) {
+        strDrawTG(menu_str[12 + i], 13, 26 + i * 15);
+    }
+}
+
+// ==================== CasBack ====================
+void CpCanvas::CasBack(int n) {
+    if (n == 0) {
+        list_suu = get_tip;
+        for (int n2 = 29; n2 >= 0; --n2) fol_data[n2] = fol[menu_sel]->tip_id[n2];
+        for (int n2 = 508; n2 >= 0; --n2) list_data[n2] = sort_list[n2] + (tip_list[n2] & 0xFFFF0000);
+        list_data[509] = fol[menu_sel]->regu_id;
+        list_data[510] = fol[menu_sel]->regu_flg;
+    } else {
+        get_tip = list_suu;
+        for (int n3 = 29; n3 >= 0; --n3) fol[menu_sel]->tip_id[n3] = fol_data[n3];
+        for (int n3 = 508; n3 >= 0; --n3) {
+            sort_list[n3] = list_data[n3] & 0xFFFF;
+            tip_list[n3] = (tip_list[n3] & 0xFFFF) + (list_data[n3] & 0xFFFF0000);
+        }
+        fol[menu_sel]->regu_id  = list_data[509];
+        fol[menu_sel]->regu_flg = list_data[510];
+    }
+}
+
+// ==================== FolCustom ====================
+int CpCanvas::FolCustom(int n, int n2, int n3) {
+    if (n3 == 0) {
+        int n5 = fol[menu_sel]->tip_id[n];
+        fol[menu_sel]->tip_id[n]  = fol[menu_sel]->tip_id[n2];
+        fol[menu_sel]->tip_id[n2] = n5;
+        if (fol[menu_sel]->regu_id == n)       fol[menu_sel]->regu_id = n2;
+        else if (fol[menu_sel]->regu_id == n2) fol[menu_sel]->regu_id = n;
+        goto _done;
+    }
+    if (n3 == 1) {
+        int n6 = fol[menu_sel]->tip_id[n];
+        if (n6 == 0) return 0;
+        fol[menu_sel]->FolNon(n);
+        --fol_cnt;
+        GetItem(0, 0, n6);
+        if (fol[menu_sel]->regu_id == n) fol[menu_sel]->regu_flg = 0;
+        goto _done;
+    }
+    if (n3 == 2) {
+        int n7 = sort_list[n];
+        sort_list[n] = sort_list[n2 - 100];
+        sort_list[n2 - 100] = n7;
+        goto _done;
+    }
+    if (n3 == 3) {
+        if (fol_cnt >= 30) { Audio(1, 12); return -1; }
+        {
+            int n4 = sort_list[n];
+            for (int i = 0; i < 30; ++i) {
+                if (fol[menu_sel]->tip_id[i] != 0) continue;
+                int r = fol[menu_sel]->FolSet(i, n4);
+                if (r != 0) {
+                    if (r==1) MesRead(120, nullptr, 3);
+                    if (r==2) MesRead(115, nullptr, 3);
+                    if (r==3) MesRead(116, nullptr, 3);
+                    if (r==4) { str = std::to_string(m_max); MesRead(113, (uint8_t*)str.data(), 3); }
+                    if (r==5) { str = std::to_string(g_max); MesRead(114, (uint8_t*)str.data(), 3); }
+                    Audio(1, 12);
+                    return r;
+                }
+                if (GetItem(0, 1, n4) == 1) {
+                    if (get_tip >= 7 && get_tip - sel_jou2 < 7) { --sel_tip2; --sel_jou2; }
+                    if (get_tip <= sel_tip2) --sel_tip2;
+                }
+                ++fol_cnt;
+                break;
+            }
+        }
+        goto _done;
+    }
+    if (n3 == 4) {
+        int n8 = fol[menu_sel]->tip_id[n];
+        if (n8 == 0) ++fol_cnt;
+        else { fol[menu_sel]->FolNon(n); GetItem(0, 0, n8); }
+        int n9 = sort_list[n2];
+        int r2 = fol[menu_sel]->FolSet(n, n9);
+        if (r2 != 0) {
+            fol[menu_sel]->FolSet(n, n8);
+            GetItem(0, 1, n8);
+            if (r2==1) MesRead(120, nullptr, 3);
+            if (r2==2) MesRead(115, nullptr, 3);
+            if (r2==3) MesRead(116, nullptr, 3);
+            if (r2==4) { str=std::to_string(m_max); MesRead(113,(uint8_t*)str.data(),3); }
+            if (r2==5) { str=std::to_string(g_max); MesRead(114,(uint8_t*)str.data(),3); }
+            if (n8 == 0) --fol_cnt;
+            return r2;
+        }
+        if (fol[menu_sel]->regu_id == n) fol[menu_sel]->regu_flg = 0;
+        if (GetItem(0, 1, n9) == 1) {
+            if (get_tip >= 7 && get_tip - sel_jou2 < 7) { --sel_tip2; --sel_jou2; }
+            if (get_tip <= sel_tip2) --sel_tip2;
+        }
+        goto _done;
+    }
+_done:
+    Audio(1, 11);
+    return 0;
+}
+
+// ==================== readSP ====================
+void CpCanvas::readSP() {
+    uint8_t _sp[300];
+    Resources::readSP(_sp, 0, 300);
+    for (int i = 0; i < 75; ++i) {
+        dat[i] = ((int)(uint8_t)_sp[i*4]<<24)|((int)(uint8_t)_sp[i*4+1]<<16)|
+                 ((int)(uint8_t)_sp[i*4+2]<<8)|(int)(uint8_t)_sp[i*4+3];
+    }
+    audio_flg = dat[53];
+    sysLoad();
+}
+
+// ==================== processEvent ====================
+void CpCanvas::processEvent(int n, int n2) {
+    if (n == 0) key = 1 << n2;
+}
+
+// ==================== QGard ====================
+void CpCanvas::QGard(int n) {
+    if (n == 0) {
+        auto _buf = GetData(0);
+        int _p = 12;
+        for (int i = 0; i < 20; ++i) {
+            if (_p + 4 > (int)_buf.size()) break;
+            q_data[i*8+0] = _buf[_p]; q_data[i*8+1] = _buf[_p+1];
+            q_data[i*8+2] = _buf[_p+2]; q_data[i*8+3] = _buf[_p+3];
+            _p += 4 + 12;
+            if (_p + 4 > (int)_buf.size()) break;
+            q_data[i*8+4] = _buf[_p]; q_data[i*8+5] = _buf[_p+1];
+            q_data[i*8+6] = _buf[_p+2]; q_data[i*8+7] = _buf[_p+3];
+            _p += 4 + 16;
+        }
+    } else {
+        for (int i = 0; i < 20; ++i) {
+            Resources::writeSP(&q_data[i*8], dat[48] + i*36 + 12, 4);
+            Resources::writeSP(&q_data[i*8+4], dat[48] + i*36 + 28, 4);
+        }
+    }
+}
+
+// ==================== imgAddSet ====================
+void CpCanvas::imgAddSet() {
+    // stub: image_add loaded from resources
+}
+
+// ==================== seDraw ====================
+void CpCanvas::seDraw() {
+    g->setColor(Graphics::getColorOfRGB(255, 255, 0));
+    for (int i = 0; i < port_suu - 1; ++i) {
+        strDraw(std::to_string(i) + ": se:" + std::to_string(now_se[i]) +
+                " p:" + std::to_string(now_se_flg[i]) +
+                " cnt:" + std::to_string(now_se_cnt[i]), 0, 205 + i * 15);
+    }
+}
+
+// ==================== syokai ====================
+void CpCanvas::syokai() {
+    while (true) {
+        g->setColor(Graphics::getColorOfRGB(0, 0, 0));
+        g->fillRect(0, 0, 240, 240);
+        if (key == 131072) { m_syokai_flg ^= 1; key = 0; }
+        if (key == 524288) { m_syokai_flg ^= 1; key = 0; }
+        g->setColor(Graphics::getColorOfRGB(255, 255, 255));
+        strDraw("\xe5\x88\x9d\xe5\x9b\x9e\xe3\x83\x87\xe3\x83\xbc\xe3\x82\xbf\xe3\x81\xae\xe6\x9b\xb4\xe6\x96\xb0\xe3\x82\x92\xe8\xa1\x8c\xe3\x81\x84\xe3\x81\xbe\xe3\x81\x99\xe3\x81\x8b\xef\xbc\x9f", 50, 100);
+        strDraw("\xe3\x81\xaf\xe3\x81\x84", 50, 120);
+        strDraw("\xe3\x81\x84\xe3\x81\x84\xe3\x81\x88", 50, 135);
+        strDraw(">>", 35, 120 + m_syokai_flg * 15);
+        if (key == 0x100000) {
+            if (m_syokai_flg == 0) dat[49] = 0;
+            break;
+        }
+        g->present();
+        SDL_Delay(16);
+        if (!Input::pollEvents()) break;
+        key = Input::getKey();
+        Input::clearKey();
+    }
+    key = 0;
+}
+
+// ==================== mldAddSet ====================
+void CpCanvas::mldAddSet() {
+    // stub: audio SE loading from jar
+    port_suu = 2;
+    se_set = new int[port_suu - 1]();
+    se_flg = new int[port_suu - 1]();
+    now_se = new int[port_suu - 1]();
+    now_se_flg = new int[port_suu - 1]();
+    now_se_cnt = new int[port_suu - 1]();
+}
+
+// ==================== dialogDraw ====================
+void CpCanvas::dialogDraw(std::string title, std::string msg) {
+    // stub: show SDL message box
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, title.c_str(), msg.c_str(), nullptr);
+}
+
+// ==================== spSave (byte array) ====================
+int CpCanvas::spSave(uint8_t* byArray, int n, int n2) {
+    if (n2 < 0) return -1;
+    Resources::savegameWrite(byArray, n, n2);
+    return n2;
+}
+
+// ==================== spSave (int array) ====================
+int CpCanvas::spSave(int* nArray, int n, int n2) {
+    if (n2 < 0) return -1;
+    std::vector<uint8_t> buf(n2 * 4);
+    for (int i = 0; i < n2; ++i) {
+        buf[i*4+0] = (uint8_t)(nArray[i] >> 24 & 0xFF);
+        buf[i*4+1] = (uint8_t)(nArray[i] >> 16 & 0xFF);
+        buf[i*4+2] = (uint8_t)(nArray[i] >> 8  & 0xFF);
+        buf[i*4+3] = (uint8_t)(nArray[i]        & 0xFF);
+    }
+    return spSave(buf.data(), n, n2 * 4);
+}
+
+// ==================== spLoad (byte array) ====================
+int CpCanvas::spLoad(uint8_t* byArray, int n, int n2) {
+    if (n2 < 0) return -1;
+    Resources::savegameRead(byArray, n, n2);
+    return n2;
+}
+
+// ==================== spLoad (int array) ====================
+int CpCanvas::spLoad(int* nArray, int n, int n2) {
+    if (n2 < 0) return -1;
+    std::vector<uint8_t> buf(n2 * 4);
+    int n3 = spLoad(buf.data(), n, n2 * 4);
+    for (int i = 0; i < n2; ++i) {
+        nArray[i] = intChange(buf.data(), i * 4);
+    }
+    return (n3 < 0) ? -1 : n2;
+}
+
+// ==================== intChange ====================
+int CpCanvas::intChange(uint8_t* byArray, int n) {
+    return ((int)(uint8_t)byArray[n+0] << 24) |
+           ((int)(uint8_t)byArray[n+1] << 16) |
+           ((int)(uint8_t)byArray[n+2] << 8)  |
+            (int)(uint8_t)byArray[n+3];
+}
+
+// ==================== sysSave ====================
+void CpCanvas::sysSave() {
+    spSave(sys_dat, 409600, sys_dat_len);
+}
+
+// ==================== sysLoad ====================
+void CpCanvas::sysLoad() {
+    spLoad(sys_dat, 409600, sys_dat_len);
+}
+
+// ==================== verSave ====================
+void CpCanvas::verSave(std::string str_, int n) {
+    int n2 = 410624 + n * 10;
+    uint8_t byArray[5] = {};
+    for (int i = 0; i < 5 && i < (int)str_.size(); ++i) byArray[i] = (uint8_t)str_[i];
+    spSave(byArray, n2, 5);
+}
+
+// ==================== verLaod ====================
+std::string CpCanvas::verLaod(int n) {
+    int n2 = 410624 + n * 10;
+    uint8_t byArray[5] = {};
+    spLoad(byArray, n2, 5);
+    return std::string((char*)byArray, 5);
+}
+
+// ==================== strDrawTG ====================
+void CpCanvas::strDrawTG(std::string s, int x, int y) {
+    tmp_graMap->drawString(s, x, y - f->getDescent());
+}

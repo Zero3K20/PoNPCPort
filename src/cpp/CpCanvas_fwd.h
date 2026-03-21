@@ -213,10 +213,12 @@ public:
     static int rika_cnt;
 
     // ── Static methods called by other classes ────────────────────────────────
-    static void MesDraw(int n);
+    static bool MesDraw(int n);
     static void drawImg3(int n, int n2, int x, int y, bool bl);
     static void ImgSuu(int v, int x, int y, int w, int a, int b);
-    static void strDraw(const std::string& s, int x, int y);
+    static void strDraw(std::string s, int x, int y);
+    static void strDrawG(std::string s, int x, int y);
+    static void strDrawTG(std::string s, int x, int y);
     static void SortSkill(int n);
     static void AddLib(int n);
     static void PalSet(int n, int n2);
@@ -225,4 +227,41 @@ public:
     static int  AtaNo(int n);
     static void seSet(int n, int n2);
     static void HpDraw(int hp, int x, int y);
+    static void Audio(int n, int n2);
+    static void readSP();
+    static void writeSP();
+    static int  spSave(uint8_t* byArray, int n, int n2);
+    static int  spSave(int* nArray, int n, int n2);
+    static int  spLoad(uint8_t* byArray, int n, int n2);
+    static int  spLoad(int* nArray, int n, int n2);
+    static int  intChange(uint8_t* byArray, int n);
+    static void sysSave();
+    static void sysLoad();
+    static void dialogDraw(std::string title, std::string msg);
+    static int* sys_dat;
+    static int  sys_dat_len;
+
+    // ── Instance methods ──────────────────────────────────────────────────────
+    void MakeSh();
+    void ReadSh(int n);
+    void ShSort();
+    void TrIO(int n);
+    int  GetTr(int n);
+    void MakeZoku();
+    void IventSet(int n);
+    int  Ivent(int n);
+    void Kouka(int n);
+    void FaceDraw2(int n, int n2, int n3);
+    void MenuMake(int n);
+    void MakeSort();
+    void CasBack(int n);
+    int  FolCustom(int n, int n2, int n3);
+    void processEvent(int n, int n2);
+    void QGard(int n);
+    void imgAddSet();
+    void seDraw();
+    void syokai();
+    void mldAddSet();
+    void verSave(std::string str_, int n);
+    std::string verLaod(int n);
 };
