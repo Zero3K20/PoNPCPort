@@ -3,24 +3,35 @@
 #include <string>
 #include <vector>
 
-// Resource loading – reads assets from PoN.sp (scratchpad) and PoN.jar.
-// Mirrors the original CpCanvas.JarGet() / Connector scratchpad API.
+// ── Resources — asset & save I/O for the PoNPCPort PC port ───────────────────
+//
+// Game assets live in two subdirectories created by tools/extract_assets.py:
+//
+//   data/sp/NN.bin  — the 40 packed binary entries from the original PoN.sp
+//   data/jar/**     — resource files extracted from PoN.jar
+//
+// Player save data is stored separately in "pon_save.dat".
+// ─────────────────────────────────────────────────────────────────────────────
 namespace Resources {
-    bool init(const std::string& spPath, const std::string& jarPath);
+    // Call once at startup.  dataDir is the path to the data/ folder
+    // (e.g. "data" or "/usr/share/pon/data").
+    bool init(const std::string& dataDir);
     void quit();
 
-    // Raw scratchpad read/write
-    bool readSP (uint8_t* dst, int pos, int len);
-    bool writeSP(const uint8_t* src, int pos, int len);
+    // ── Save-state I/O ────────────────────────────────────────────────────────
+    // Mirror the original DoJa scratchpad read/write at byte offset [pos, pos+len).
+    bool readSP (uint8_t* dst,        int pos, int len);
+    bool writeSP(const uint8_t* src,  int pos, int len);
 
-    // Return the decompressed bytes for scratchpad entry n.
-    // dat[] is the first-75-int header table already loaded into CpCanvas::dat.
-    std::vector<uint8_t> jarGet(int n, const int* dat);
+    // ── SP entry loader ───────────────────────────────────────────────────────
+    // Returns the raw bytes of data/sp/NN.bin for entry index n (0–39).
+    std::vector<uint8_t> jarGet(int n);
 
-    // Load a named file from inside PoN.jar (e.g. "0.gif")
+    // ── JAR resource loader ───────────────────────────────────────────────────
+    // Returns the raw bytes of data/jar/<name>.
     std::vector<uint8_t> jarResource(const std::string& name);
 
-    // Save-game file I/O (local file "pon_save.dat")
-    bool savegameRead (uint8_t* dst, int offset, int len);
+    // ── Legacy save-game wrappers (delegate to readSP / writeSP) ─────────────
+    bool savegameRead (uint8_t* dst,       int offset, int len);
     bool savegameWrite(const uint8_t* src, int offset, int len);
 }

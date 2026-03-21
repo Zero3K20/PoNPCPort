@@ -64,9 +64,10 @@ int main(int argc, char* argv[]) {
     Audio::init();
     Input::init();
 
-    // 5. Resource layer
-    if (!Resources::init("PoN.sp", "PoN.jar")) {
-        SDL_Log("Resources::init failed – PoN.sp or PoN.jar missing");
+    // 5. Resource layer – data/ subdirectories created by tools/extract_assets.py
+    if (!Resources::init("data")) {
+        SDL_Log("Resources::init failed – data/ directory missing");
+        SDL_Log("Run:  python3 tools/extract_assets.py  to unpack PoN.sp / PoN.jar");
         Input::quit();
         Audio::quit();
         IMG_Quit();

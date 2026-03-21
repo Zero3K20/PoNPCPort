@@ -9,8 +9,6 @@ find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBZIP REQUIRED libzip)
 
 set(PLATFORM_SOURCES
     platform/Graphics.cpp
@@ -42,7 +40,6 @@ add_executable(PoNPCPort ${PLATFORM_SOURCES} ${GAME_SOURCES})
 
 target_include_directories(PoNPCPort PRIVATE
     ${SDL2_INCLUDE_DIRS}
-    ${LIBZIP_INCLUDE_DIRS}
     platform
     src/cpp
 )
@@ -54,14 +51,13 @@ target_link_libraries(PoNPCPort PRIVATE
     SDL2_ttf::SDL2_ttf
     SDL2_image::SDL2_image
     ZLIB::ZLIB
-    ${LIBZIP_LIBRARIES}
 )
 
-# Copy game data files to build directory after build
+# Copy the pre-extracted data/ tree to the build directory after build.
+# Run tools/extract_assets.py once to populate data/ from PoN.sp and PoN.jar.
 add_custom_command(TARGET PoNPCPort POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/PoN.jar"
-        "${CMAKE_SOURCE_DIR}/PoN.sp"
-        $<TARGET_FILE_DIR:PoNPCPort>
-    COMMENT "Copying game data files"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/data"
+        "$<TARGET_FILE_DIR:PoNPCPort>/data"
+    COMMENT "Copying game data directory"
 )

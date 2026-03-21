@@ -521,7 +521,7 @@ std::vector<uint8_t> CpCanvas::GetQstr(int n) {
 // ==================== GetData (stub) ====================
 std::vector<uint8_t> CpCanvas::GetData(int n) {
     CpCanvas::http_error = -1;
-    return Resources::jarGet(n, CpCanvas::dat);
+    return Resources::jarGet(n);
 }
 
 // ==================== dataMldGet (stub) ====================
@@ -659,7 +659,7 @@ void CpCanvas::SetFlg(int n) {
     if (n == 0) {
         int n2;
         try {
-            auto _buf = Resources::jarGet(1, CpCanvas::dat);
+            auto _buf = Resources::jarGet(1);
             int _p = 0;
             auto _ri = [&]() -> int {
                 int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -675,7 +675,7 @@ void CpCanvas::SetFlg(int n) {
             }
         } catch (...) {}
         try {
-            auto _buf = Resources::jarGet(2, CpCanvas::dat);
+            auto _buf = Resources::jarGet(2);
             int _p = 0;
             auto _ri = [&]() -> int {
                 int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -696,7 +696,7 @@ void CpCanvas::SetFlg(int n) {
         } catch (...) {}
     } else {
         try {
-            auto _buf = Resources::jarGet(4, CpCanvas::dat);
+            auto _buf = Resources::jarGet(4);
             int _p = 0;
             auto _ri = [&]() -> int {
                 int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -722,7 +722,7 @@ void CpCanvas::SetFlg(int n) {
 // ==================== PASet ====================
 void CpCanvas::PASet() {
     try {
-        auto _buf = Resources::jarGet(20, CpCanvas::dat);
+        auto _buf = Resources::jarGet(20);
         int _p = 0;
         auto _rb = [&]() -> int { return (int)(uint8_t)_buf[_p++]; };
         auto _ri = [&]() -> int {
@@ -748,7 +748,7 @@ void CpCanvas::PASet() {
 void CpCanvas::EneSet(int n, int n2) {
     if (n < 0) {
         try {
-            auto _buf = Resources::jarGet(30, CpCanvas::dat);
+            auto _buf = Resources::jarGet(30);
             int _p = 0;
             auto _ri = [&]() -> int {
                 int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -760,7 +760,7 @@ void CpCanvas::EneSet(int n, int n2) {
         } catch (...) {}
     } else {
         try {
-            auto _buf = Resources::jarGet(29, CpCanvas::dat);
+            auto _buf = Resources::jarGet(29);
             int _p = 16 * n2;
             int n3 = 0;
             for (n3 = 0; n3 < 16 && _buf[_p + n3] != 0; ++n3) {}
@@ -2636,7 +2636,7 @@ int CpCanvas::PaNo(int n, int n2, int n3, int n4) {
 void CpCanvas::MldSet() {
     // Simplified: audio setup is handled differently in SDL2
     try {
-        auto _buf = Resources::jarGet(5, CpCanvas::dat);
+        auto _buf = Resources::jarGet(5);
         int _p = 0;
         auto _ri = [&]() -> int {
             int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -2656,7 +2656,7 @@ void CpCanvas::MldSet() {
 // ==================== ImgSet2 ====================
 void CpCanvas::ImgSet2(int n) {
     try {
-        auto _buf = Resources::jarGet(3, CpCanvas::dat);
+        auto _buf = Resources::jarGet(3);
         int _p = 0;
         auto _ri = [&]() -> int {
             int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -2679,7 +2679,7 @@ void CpCanvas::ImgSet2(int n) {
 // ==================== PalSet ====================
 void CpCanvas::PalSet(int n, int n2) {
     try {
-        auto _buf = Resources::jarGet(4, CpCanvas::dat);
+        auto _buf = Resources::jarGet(4);
         // Palette loading implementation
     } catch (...) {}
 }
@@ -2693,7 +2693,7 @@ void CpCanvas::ImgSet() {
         DrawBar(0, (i + 1) * 10 / 37);
     }
     try {
-        auto _buf = Resources::jarGet(1, CpCanvas::dat);
+        auto _buf = Resources::jarGet(1);
         int _p = 0;
         auto _ri = [&]() -> int {
             int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -2713,7 +2713,7 @@ void CpCanvas::ImgSet() {
 
 // ==================== JarGet ====================
 std::vector<uint8_t> CpCanvas::JarGet(int n) {
-    return Resources::jarGet(n, CpCanvas::dat);
+    return Resources::jarGet(n);
 }
 
 
@@ -2828,7 +2828,7 @@ void CpCanvas::BtSet(int n) {
     CpCanvas::boss_flg = 0;
     
     try {
-        auto _buf = Resources::jarGet(31, CpCanvas::dat);
+        auto _buf = Resources::jarGet(31);
         int _p = n * 4 * 4;
         auto _ri = [&]() -> int {
             int v = ((int)(uint8_t)_buf[_p]<<24)|((int)(uint8_t)_buf[_p+1]<<16)|((int)(uint8_t)_buf[_p+2]<<8)|(int)(uint8_t)_buf[_p+3];
@@ -2846,7 +2846,7 @@ void CpCanvas::BtSet(int n) {
                     nArray2[n3 * 4 + 3] = 10;
                 }
             }
-            auto _buf2 = Resources::jarGet(32, CpCanvas::dat);
+            auto _buf2 = Resources::jarGet(32);
             int _p2 = n5 * 4 * 3;
             auto _ri2 = [&]() -> int {
                 int v = ((int)(uint8_t)_buf2[_p2]<<24)|((int)(uint8_t)_buf2[_p2+1]<<16)|((int)(uint8_t)_buf2[_p2+2]<<8)|(int)(uint8_t)_buf2[_p2+3];
@@ -2970,7 +2970,7 @@ int CpCanvas::AtaNo(int n) {
 // ==================== TipSet ====================
 void CpCanvas::TipSet() {
     try {
-        auto _buf = Resources::jarGet(21, CpCanvas::dat);
+        auto _buf = Resources::jarGet(21);
         int _p = 0;
         for (int i = 0; i < 255; ++i) {
             CpCanvas::tip_list[i << 1] = ((int)(uint8_t)_buf[_p] << 8) | (int)(uint8_t)_buf[_p + 1];
@@ -3490,14 +3490,14 @@ void CpCanvas::MesRead(int n, uint8_t* byArray, int n2) {
         } else if (n2 == 3) {
             int n3 = MesNo(n);
             if (n3 < 0) {
-                _buf = Resources::jarGet(11, CpCanvas::dat);
+                _buf = Resources::jarGet(11);
             } else {
-                _buf = Resources::jarGet(35, CpCanvas::dat);
+                _buf = Resources::jarGet(35);
             }
         } else if (n2 == 4) {
-            _buf = Resources::jarGet(12, CpCanvas::dat);
+            _buf = Resources::jarGet(12);
         } else if (n2 == 5) {
-            _buf = Resources::jarGet(13, CpCanvas::dat);
+            _buf = Resources::jarGet(13);
         }
         // Load message strings
         for (int n3 = 0; n3 < 3; ++n3) {
