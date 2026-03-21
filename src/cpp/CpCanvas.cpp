@@ -3916,7 +3916,6 @@ void CpCanvas::Keiji() {
 
 // ==================== Shop ====================
 void CpCanvas::Shop() {
-    int n, n2, n3;
     CpCanvas::soft_id[0] = 2;
     CpCanvas::soft_id[1] = 0;
     int n4 = getKeypadState();
@@ -4525,7 +4524,6 @@ void CpCanvas::MakeSh() {
 // ==================== ReadSh ====================
 void CpCanvas::ReadSh(int n) {
     shop_id = n;
-    uint8_t byArray[4];
     if (n < 8) {
         int n2, n3;
         shop_syu = n / 6;
@@ -4717,34 +4715,34 @@ void CpCanvas::IventSet(int n) {
     } else if (n == 2) {
         if (i_id[0] == 0) {
             if (i_id[3] == 10) {
-                talk_flg[i_id[1]][i_id[2]] += 1;
+                talk_flg[i_id[1] * 4 + i_id[2]] += 1;
             } else {
-                talk_flg[i_id[1]][i_id[2]] = i_id[3];
+                talk_flg[i_id[1] * 4 + i_id[2]] = i_id[3];
             }
-            if (talk_flg[i_id[1]][i_id[2]] > 4 || talk_flg[i_id[1]][i_id[2]] < 0) {
-                talk_flg[i_id[1]][i_id[2]] = 0;
+            if (talk_flg[i_id[1] * 4 + i_id[2]] > 4 || talk_flg[i_id[1] * 4 + i_id[2]] < 0) {
+                talk_flg[i_id[1] * 4 + i_id[2]] = 0;
             }
             talk_cnt = CharaCnt();
         } else if (i_id[0] == 1) {
             if (i_id[2] < 4) {
-                item_flg[i_id[1]][i_id[2]] = i_id[3];
+                item_flg[i_id[1] * 4 + i_id[2]] = i_id[3];
                 if (map_no == i_id[1]) {
-                    int n3 = (m_item[i_id[2]][2] - 120) / 30;
-                    int n4 = (m_item[i_id[2]][3] - 124) / 30;
+                    int n3 = (m_item[i_id[2] * 4 + 2] - 120) / 30;
+                    int n4 = (m_item[i_id[2] * 4 + 3] - 124) / 30;
                     m_data[n4 * 24 + n3] = (i_id[3] == 0) ? 1 : 32 + i_id[2];
                 }
             } else if (i_id[2] < 6) {
-                tobi_flg[i_id[1]][i_id[2] - 4] = i_id[3];
+                tobi_flg[i_id[1] * 2 + (i_id[2] - 4)] = i_id[3];
                 if (map_no == i_id[1]) {
-                    int n5 = (m_tobi[i_id[2]-4][3] - 120) / 30;
-                    int n6 = (m_tobi[i_id[2]-4][4] - 124) / 30;
+                    int n5 = (m_tobi[(i_id[2]-4) * 5 + 3] - 120) / 30;
+                    int n6 = (m_tobi[(i_id[2]-4) * 5 + 4] - 124) / 30;
                     m_data[n6 * 24 + n5] = (i_id[3] == 0) ? 1 : 64 + i_id[2] - 4;
                 }
             } else {
-                chara_flg[i_id[1]][i_id[2] - 6] = i_id[3];
+                chara_flg[i_id[1] * 4 + (i_id[2] - 6)] = i_id[3];
                 if (map_no == i_id[1]) {
-                    int n7 = (m_chara[i_id[2]-6][4] - 120) / 30;
-                    int n8 = (m_chara[i_id[2]-6][5] - 124) / 30;
+                    int n7 = (m_chara[(i_id[2]-6) * 6 + 4] - 120) / 30;
+                    int n8 = (m_chara[(i_id[2]-6) * 6 + 5] - 124) / 30;
                     m_data[n8 * 24 + n7] = (i_id[3] == 0) ? 1 : 128 + i_id[2] - 6;
                 }
             }

@@ -231,7 +231,7 @@ int Ene::Move() {
         } else if (chara_no == 4) {
             if (move_cnt > 14 - tmp_lv * 2 && move_flg == 0) {
                 move_cnt = 0;
-                if (tmp_cnt > 1 + (CpCanvas::rand() & 0x7FFFFFFF) % 3) {
+                if (tmp_cnt > 1 + (int)((CpCanvas::rand() & 0x7FFFFFFF) % 3)) {
                     Action(0);
                     wait_cnt = 40 - tmp_lv * 5;
                     tmp_cnt  = 0;
@@ -251,7 +251,7 @@ int Ene::Move() {
         } else if (chara_no == 5) {
             if (move_cnt > 13 - tmp_lv * 2 && move_flg == 0) {
                 move_cnt = 0;
-                if (tmp_cnt > (CpCanvas::rand() & 0x7FFFFFFF) % 3 + 2 - tmp_lv / 2) {
+                if (tmp_cnt > (int)((CpCanvas::rand() & 0x7FFFFFFF) % 3) + 2 - tmp_lv / 2) {
                     Action(0);
                     wait_cnt = 35 - tmp_lv * 5;
                     tmp_cnt  = 0;

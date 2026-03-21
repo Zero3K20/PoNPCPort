@@ -1317,7 +1317,7 @@ bool Attack::Hit(int n, int n2, int n3) {
                 hit_eff = 45;
                 HitEff(n, n2, flp ^ 1);
                 hit_eff = n5;
-                ren_hit |= 1 << n6 + 2;
+                ren_hit |= 1 << (n6 + 2);
                 hit_flg = 1;
                 hit_ok = 1;
                 return true;
@@ -1326,7 +1326,7 @@ bool Attack::Hit(int n, int n2, int n3) {
             if (param[8] != 1) {
                 HitEff(n, n2, flp);
             }
-            ren_hit |= 1 << n6 + 2;
+            ren_hit |= 1 << (n6 + 2);
             hit_flg = 1;
             hit_ok = 1;
             return true;
