@@ -39,5 +39,5 @@ static FARPROC WINAPI compat_delayload_hook(unsigned dliNotify, PDelayLoadInfo p
 }
 
 /* Override the weak NULL definition supplied by delayimp.lib.
- * Must be non-const and extern "C" to match the declaration in delayimp.h. */
-extern "C" PfnDliHook __pfnDliFailureHook2 = compat_delayload_hook;
+ * Declared as 'const' in the VS2019 SDK delayimp.h; definition must match. */
+extern "C" const PfnDliHook __pfnDliFailureHook2 = compat_delayload_hook;
