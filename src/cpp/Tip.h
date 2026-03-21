@@ -16,6 +16,7 @@ public:
     std::string name;
 
     Tip() = default;
+    explicit Tip(int id) : tip_id(id) {}
     void init(int n, const uint8_t* tipData, const uint8_t* nameData);
 
     void DrawSetu();

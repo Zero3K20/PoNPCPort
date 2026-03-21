@@ -125,6 +125,12 @@ void AudioPresenter::setVolume(int vol) {
     }
 }
 
+void AudioPresenter::setAttribute(int attr, int val) {
+    if (attr == 4) {
+        setVolume(val);
+    }
+}
+
 bool AudioPresenter::isPlaying() const {
     if (!m_voice) return false;
     XAUDIO2_VOICE_STATE state = {};

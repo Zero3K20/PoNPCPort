@@ -93,6 +93,21 @@ void Graphics::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3) {
     gfx->FillPolygon(&br, pts, 3);
 }
 
+void Graphics::drawScaledImage(Image* img, int dx, int dy, int dw, int dh, int sx, int sy, int sw, int sh) {
+    if (!img || !img->bitmap) return;
+    Gdiplus::REAL fdx = (Gdiplus::REAL)dx, fdy = (Gdiplus::REAL)dy;
+    applyOrigin(fdx, fdy);
+    Gdiplus::RectF destRect(fdx, fdy, (Gdiplus::REAL)dw, (Gdiplus::REAL)dh);
+    gfx->DrawImage(img->bitmap, destRect,
+                   (Gdiplus::REAL)sx, (Gdiplus::REAL)sy,
+                   (Gdiplus::REAL)sw, (Gdiplus::REAL)sh,
+                   Gdiplus::UnitPixel);
+}
+
+void Graphics::setFlipMode(int mode) {
+    flipMode = mode;
+}
+
 // ── Images ─────────────────────────────────────────────────────────────────
 void Graphics::drawImage(Image* img, int x, int y) {
     if (!img || !img->bitmap) return;
@@ -118,11 +133,20 @@ void Graphics::drawImage(Image* img, int dx, int dy, int sx, int sy, int sw, int
     if (!img || !img->bitmap) return;
     Gdiplus::REAL fdx = (Gdiplus::REAL)dx, fdy = (Gdiplus::REAL)dy;
     applyOrigin(fdx, fdy);
-    Gdiplus::RectF dst(fdx, fdy, (Gdiplus::REAL)sw, (Gdiplus::REAL)sh);
-    gfx->DrawImage(img->bitmap, dst,
-                   (Gdiplus::REAL)sx, (Gdiplus::REAL)sy,
-                   (Gdiplus::REAL)sw, (Gdiplus::REAL)sh,
-                   Gdiplus::UnitPixel);
+    if (flipMode != 0) {
+        // Horizontal flip: use negative destination width to mirror
+        Gdiplus::RectF dst(fdx + (Gdiplus::REAL)sw, fdy, -(Gdiplus::REAL)sw, (Gdiplus::REAL)sh);
+        gfx->DrawImage(img->bitmap, dst,
+                       (Gdiplus::REAL)sx, (Gdiplus::REAL)sy,
+                       (Gdiplus::REAL)sw, (Gdiplus::REAL)sh,
+                       Gdiplus::UnitPixel);
+    } else {
+        Gdiplus::RectF dst(fdx, fdy, (Gdiplus::REAL)sw, (Gdiplus::REAL)sh);
+        gfx->DrawImage(img->bitmap, dst,
+                       (Gdiplus::REAL)sx, (Gdiplus::REAL)sy,
+                       (Gdiplus::REAL)sw, (Gdiplus::REAL)sh,
+                       Gdiplus::UnitPixel);
+    }
 }
 
 // ── Text ───────────────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@
 #include "BtPanel.h"
 #include "Okimono.h"
 #include "Tip.h"
+#include <cstring>
 
 Attack::Attack(int n) {
     ata_id = n;
@@ -860,7 +861,7 @@ lbl_block434_end:;
 lbl_block432_end:;
     if (param[8] != 34) goto lbl_block466_end;
     if (move_cnt != 0) goto lbl_block468_end;
-    nArray = new int[18];
+    memset(nArray, 0, sizeof(nArray));
     n7 = 0;
     for (int i = 0; i < 18; ++i) {
         if (CpCanvas::panel[i / 6][i % 6].jin != (flp ^ 1) || CpCanvas::panel[i / 6][i % 6].on_chara != 0 || CpCanvas::panel[i / 6][i % 6].jou <= 0) continue;

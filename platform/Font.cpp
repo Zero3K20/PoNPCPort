@@ -59,3 +59,11 @@ int Font::stringWidth(const std::string& s) const {
 }
 
 int Font::getHeight() const { return height; }
+
+int Font::getDescent() const {
+    if (!family) return 0;
+    int emHeight = family->GetEmHeight(Gdiplus::FontStyleRegular);
+    int descent  = family->GetCellDescent(Gdiplus::FontStyleRegular);
+    if (emHeight == 0) return 0;
+    return (int)((height * descent) / emHeight);
+}

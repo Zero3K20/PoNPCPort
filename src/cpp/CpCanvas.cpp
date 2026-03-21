@@ -330,7 +330,7 @@ int* CpCanvas::sh_syu = nullptr;
 int* CpCanvas::sh_id = nullptr;
 int* CpCanvas::sh_kin = nullptr;
 int* CpCanvas::sh_list = nullptr;
-int* CpCanvas::sh_zai = nullptr;
+int (*CpCanvas::sh_zai)[12] = nullptr;
 int* CpCanvas::set_t = nullptr;
 int* CpCanvas::tr_list = nullptr;
 int* CpCanvas::r_jun = nullptr;
@@ -648,7 +648,7 @@ void CpCanvas::init(int n) {
         CpCanvas::dat[61] = 0;
         CpCanvas::dat[62] = 0;
         CpCanvas::dat[63] = 0;
-        CpCanvas::sh_zai[0] = 0;
+        CpCanvas::sh_zai[0][0] = 0;
         CpCanvas::q_flg[0] = 0;
         CpCanvas::q_flg[1] = 0;
     }
@@ -4164,7 +4164,7 @@ int CpCanvas::CharaCnt() {
 }
 
 // ==================== GetItem ====================
-void CpCanvas::GetItem(int n, int n2, int n3) {
+int CpCanvas::GetItem(int n, int n2, int n3) {
     if (n == 0 && n3 > 0) {
         AddLib(n3);
     } else if (n == 1) {
@@ -4172,6 +4172,7 @@ void CpCanvas::GetItem(int n, int n2, int n3) {
     } else if (n == 2) {
         CpCanvas::piece += n3;
     }
+    return 0;
 }
 
 // ==================== ItemName ====================
@@ -4354,7 +4355,7 @@ void CpCanvas::SetUp() {
     CpCanvas::sh_id = new int[16]();
     CpCanvas::sh_kin = new int[16]();
     CpCanvas::sh_list = new int[16]();
-    CpCanvas::sh_zai = new int[1]();
+    CpCanvas::sh_zai = new int[8][12]();
     CpCanvas::set_t = new int[16]();
     CpCanvas::tr_list = new int[32]();
     CpCanvas::r_jun = new int[10]();
@@ -4808,7 +4809,7 @@ void CpCanvas::IventSet(int n) {
         } else if (i_id[0] == 27) {
             ren_flg = 1; ren_id = i_id[1];
             eff_cnt = 1;
-            teki_pt = teki_ren[ren_id][0];
+            teki_pt = teki_ren[ren_id * 11];
             come_back = i_id[3];
             tmp_hp = now_hp;
             ivent_flg = 1;
@@ -4852,8 +4853,8 @@ void CpCanvas::IventSet(int n) {
             if (i_id[1]==1) --q_hen;
             if (i_id[1]==2) q_hen = i_id[2];
         } else if (i_id[0] == 32) {
-            teki_ren[i_id[1]][i_id[3]]   = i_id[2];
-            teki_ren[i_id[1]][i_id[3]+1] = 0;
+            teki_ren[i_id[1] * 11 + i_id[3]]   = i_id[2];
+            teki_ren[i_id[1] * 11 + i_id[3] + 1] = 0;
         }
     } else if (n == 3) {
         if (i_id[0] == 0) {
@@ -5312,8 +5313,8 @@ void CpCanvas::QGard(int n) {
         }
     } else {
         for (int i = 0; i < 20; ++i) {
-            Resources::writeSP(&q_data[i*8], dat[48] + i*36 + 12, 4);
-            Resources::writeSP(&q_data[i*8+4], dat[48] + i*36 + 28, 4);
+            Resources::writeSP((const uint8_t*)&q_data[i*8], dat[48] + i*36 + 12, 4);
+            Resources::writeSP((const uint8_t*)&q_data[i*8+4], dat[48] + i*36 + 28, 4);
         }
     }
 }

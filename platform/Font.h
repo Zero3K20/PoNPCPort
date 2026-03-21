@@ -12,6 +12,7 @@ public:
     static Font* getFont(int style);  // style 0 = default
     int  stringWidth(const std::string& s) const;
     int  getHeight()                       const;
+    int  getDescent()                      const;
     ~Font();
 
 private:

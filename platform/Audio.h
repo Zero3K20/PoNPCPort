@@ -15,6 +15,7 @@ public:
     void play(int loop = 0);   // 0 = once, non-zero = loop
     void stop();
     void setVolume(int vol);   // 0-100
+    void setAttribute(int attr, int val); // attr 4 = volume (0-100)
     bool isPlaying() const;
 
     Type type;

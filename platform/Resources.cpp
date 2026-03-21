@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4996)  // 'fopen': This function or variable may be unsafe
+#endif
 #include "Resources.h"
 #include <cstdio>
 #include <cstring>

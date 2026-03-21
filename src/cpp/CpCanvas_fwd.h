@@ -409,7 +409,7 @@ public:
     static int* sh_id;
     static int* sh_kin;
     static int* sh_list;
-    static int* sh_zai;
+    static int (*sh_zai)[12];
     static int* set_t;
     static int* tr_list;
     static int* r_jun;
@@ -494,7 +494,6 @@ public:
     static void ImgSet2(int n);
     static void ImgSet();
     static std::vector<uint8_t> JarGet(int n);
-    static int  Ani(int n, int n2, int n3, int n4, int n5, int n6, int n7, int n8);
     static int  Ani(int n, int n2, int n3, int n4, int n5);
     static void BtSet(int n);
     static void TipSet();
@@ -533,7 +532,7 @@ public:
     static int  IventMain();
     static void imgAddDraw(int n, int x, int y);
     static int  CharaCnt();
-    static void GetItem(int n, int n2, int n3);
+    static int  GetItem(int n, int n2, int n3);
     static std::string ItemName(int n, int n2);
     static void Load(int n);
     static void Save(int n);

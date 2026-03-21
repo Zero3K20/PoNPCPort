@@ -15,6 +15,7 @@ public:
     int originY = 0;
     Gdiplus::ARGB color = 0xFF000000;       // current ARGB color
     Font* currentFont = nullptr;
+    int flipMode = 0;  // 0 = normal, non-zero = horizontal flip
 
     // Window-mode constructor: creates a 240×240 backbuffer; present() → HWND.
     explicit Graphics(HWND hwnd);
@@ -42,6 +43,8 @@ public:
     void        translate(int dx, int dy);
     void        copyArea(int sx, int sy, int sw, int sh, int dx, int dy, int anchor);
     void        fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3);
+    void        drawScaledImage(Image* img, int dx, int dy, int dw, int dh, int sx, int sy, int sw, int sh);
+    void        setFlipMode(int mode);  // 0 = normal, non-zero = horizontal flip
 
     // Blit the backbuffer to the window (called by unlock(true) on the main target).
     void        present();
