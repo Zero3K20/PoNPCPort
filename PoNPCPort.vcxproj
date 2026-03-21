@@ -58,8 +58,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>api-ms-win-core-com-l1-1-0.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
@@ -84,8 +83,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>api-ms-win-core-com-l1-1-0.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
@@ -97,7 +95,6 @@
   <ItemGroup>
     <!-- Platform layer -->
     <ClCompile Include="platform\Audio.cpp" />
-    <ClCompile Include="platform\compat_delayload.cpp" />
     <ClCompile Include="platform\Font.cpp" />
     <ClCompile Include="platform\Graphics.cpp" />
     <ClCompile Include="platform\Image.cpp" />
