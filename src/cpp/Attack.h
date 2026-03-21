@@ -59,5 +59,27 @@ public:
     explicit Attack(int n);
 
     void init();
-    void Set(int waza, int x, int y, int flp, int chara);
+    int Set(int waza, int x, int y, int flp, int chara);
+    void EffSet();
+    int CopySet(int n, int n2, int n3, int n4);
+    void WazaSet();
+    void KouSet();
+    void PosSet(int n);
+    int EneZa(int n);
+    void HitSet(int n);
+    void Move(int n);
+    void MocoSet();
+    void HitGo(int n);
+    bool HitTime();
+    void HitCheck(int n);
+    void PaneRetrun(int n, int n2, int n3);
+    int PaneRan(int n, int n2, int n3);
+    void HitExp(int n, int n2);
+    void SetOki(int n);
+    int OnlyOki(int n);
+    int HitEnd(int n);
+    bool Hit(int n, int n2, int n3);
+    bool HitEff(int n, int n2, int n3);
+    void Loop();
+    void Draw(int n, int n2);
 };

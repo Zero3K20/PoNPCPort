@@ -209,6 +209,9 @@ public:
     static int sel_tip;
     static int sel_tip2;
 
+    // ── Battle state (rika_cnt added) ──────────────────────────────────────────
+    static int rika_cnt;
+
     // ── Static methods called by other classes ────────────────────────────────
     static void MesDraw(int n);
     static void drawImg3(int n, int n2, int x, int y, bool bl);
@@ -218,6 +221,7 @@ public:
     static void AddLib(int n);
     static void PalSet(int n, int n2);
     static int  Ani(int n, int n2, int n3, int n4, int n5, int dx, int dy, int flp);
+    static int  AniSe(int ani_id, int ani_pt, int ani_cnt, int x, int y, int dx, int dy, int flp, int se_id, int n3);
     static int  AtaNo(int n);
     static void seSet(int n, int n2);
     static void HpDraw(int hp, int x, int y);
