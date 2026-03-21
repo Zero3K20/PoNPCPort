@@ -61,8 +61,9 @@
       <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
-      <Message>Copying game data directory</Message>
+      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"
+xcopy /Y "$(WindowsSdkDir)Redist\$(WindowsSDKVersion)ucrt\DLLs\$(Platform)\*" "$(OutDir)"</Command>
+      <Message>Copying game data directory and UCRT runtime DLLs</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
@@ -86,8 +87,9 @@
       <AdditionalDependencies>gdiplus.lib;xaudio2.lib;ole32.lib;windowscodecs.lib;shell32.lib;kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"</Command>
-      <Message>Copying game data directory</Message>
+      <Command>xcopy /E /I /Y "$(ProjectDir)data" "$(OutDir)data"
+xcopy /Y "$(WindowsSdkDir)Redist\$(WindowsSDKVersion)ucrt\DLLs\$(Platform)\*" "$(OutDir)"</Command>
+      <Message>Copying game data directory and UCRT runtime DLLs</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
