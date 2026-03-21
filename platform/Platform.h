@@ -12,6 +12,10 @@
 // uses unqualified min/max which are provided as macros by <windows.h>.
 // Our own code uses std::min / std::max with qualified names.
 #include <algorithm>    // std::min, std::max (also ensures C++ overloads visible)
+// GDIPVER 0x0110 suppresses C7550 constructor-injection errors in C++17 mode
+#ifndef GDIPVER
+#define GDIPVER 0x0110
+#endif
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
