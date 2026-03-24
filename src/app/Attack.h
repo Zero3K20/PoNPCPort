@@ -1,0 +1,74 @@
+#pragma once
+#include "Types.h"
+
+class Attack {
+public:
+    int ata_id;
+    int tmp_id;
+    int eff_id;
+    int pos_x;
+    int pos_y;
+    int pos_dx;
+    int pos_dy;
+    int waza_id;
+    int yokoku;
+    int move_flg;
+    int pow;
+    int zoku;
+    int hit_x;
+    int hit_y;
+    int hit_kou;
+    int hit_eff;
+    int hit_param;
+    int hit_kan;
+    int hit_ana;
+    int hit_bure;
+    int hit_time;
+    int oki_hit;
+    int hit_flg;
+    int param[12];
+    int ani_id;
+    int ani_pt;
+    int ani_max;
+    int ani_cnt;
+    int ani_ok;
+    int stop;
+    int move_cnt;
+    int move_x;
+    int move_y;
+    int s_wait;
+    int e_wait;
+    int r_suu;
+    int r_s;
+    int r_e;
+    int on;
+    int chara_flg;
+    int flp;
+    int ren_hit;
+    int hon_id;
+    int t_ani_cnt;
+    int tmp_s_wait;
+    int tmp_r_suu;
+    int tmp_e_wait;
+    int hit_ok;
+    int loop_flg;
+    int se_id;
+    int se_flg;
+
+    explicit Attack(int n);
+    void init();
+    int  Set(int n, int n2, int n3, int n4, int n5);
+    void EffSet();
+    int  CopySet(int n, int n2, int n3, int n4);
+    void WazaSet();
+    void KouSet();
+    void PosSet(int n);
+    int  EneZa(int n);
+    void HitSet(int n);
+    void Move();
+    void Loop();
+    void Draw();
+    void RockHit();
+    void EneHit();
+    void OkiHit();
+};
