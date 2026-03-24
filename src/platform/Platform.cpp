@@ -22,7 +22,8 @@ HDC           g_hdc_win       = nullptr;
 PlatFont      g_font;
 PlatColor     g_cur_color     = 0;
 int           g_flip_mode     = 0;
-int           g_game_key      = 0;
+int           g_game_key      = 0;  /* current physical key state (held) */
+int           g_key_pressed   = 0;  /* latch: keys pressed since last GetKey */
 int           g_prev_key      = 0;
 PlatSurface   g_imgMap;
 PlatSurface   g_tmp_imgMap;
@@ -41,23 +42,6 @@ static const wchar_t *WND_CLASS = L"PoNPCPort";
 
 /* Forward declare WndProc */
 static LRESULT CALLBACK WndProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
-
-/* Key mapping: maps VK codes to game key bits */
-/* Game uses processEvent(0, keycode) where keycode bit positions:
-   bit0=1 (VK_LEFT?), etc.
-   From Java: key = 1 << n2
-   Phone keypad: 0=softleft,1=up,2=softright,3=left,4=center,5=right,
-                 6=#,7=down,8=*,9=0,10=1..19=9 etc.
-   High bits: Up=65536(2^16), Down=262144(2^18), Left=2048(2^11), Right=512(2^9),
-              Fire=1048576(2^20)
-*/
-#define KEY_UP       0x00010000   /* 2^16 */
-#define KEY_DOWN     0x00040000   /* 2^18 */
-#define KEY_LEFT     0x00000800   /* 2^11 */
-#define KEY_RIGHT    0x00000200   /* 2^9  */
-#define KEY_FIRE     0x00100000   /* 2^20 - center key / fire */
-#define KEY_SOFTL    0x00000001   /* soft key left */
-#define KEY_SOFTR    0x00000004   /* soft key right */
 
 /* ---- Window procedure -------------------------------------------------- */
 static LRESULT CALLBACK WndProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
@@ -78,17 +62,22 @@ static LRESULT CALLBACK WndProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
     }
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN: {
+        int bit = 0;
         switch (wp) {
-        case VK_UP:     g_game_key |= KEY_UP;    break;
-        case VK_DOWN:   g_game_key |= KEY_DOWN;  break;
-        case VK_LEFT:   g_game_key |= KEY_LEFT;  break;
-        case VK_RIGHT:  g_game_key |= KEY_RIGHT; break;
+        case VK_UP:     bit = KEY_UP;    break;
+        case VK_DOWN:   bit = KEY_DOWN;  break;
+        case VK_LEFT:   bit = KEY_LEFT;  break;
+        case VK_RIGHT:  bit = KEY_RIGHT; break;
         case VK_RETURN:
-        case VK_SPACE:  g_game_key |= KEY_FIRE;  break;
-        case 'Z':       g_game_key |= KEY_FIRE;  break;
-        case 'X':       g_game_key |= KEY_SOFTL; break;
-        case 'C':       g_game_key |= KEY_SOFTR; break;
-        case VK_ESCAPE: PostQuitMessage(0);       break;
+        case VK_SPACE:
+        case 'Z':       bit = KEY_FIRE;  break;
+        case 'X':       bit = KEY_SOFTL; break;
+        case 'C':       bit = KEY_SOFTR; break;
+        case VK_ESCAPE: PostQuitMessage(0); return 0;
+        }
+        if (bit) {
+            g_game_key    |= bit;   /* held-key state */
+            g_key_pressed |= bit;   /* latch: catches taps between frames */
         }
         return 0;
     }
@@ -100,7 +89,7 @@ static LRESULT CALLBACK WndProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
         case VK_LEFT:   g_game_key &= ~KEY_LEFT;  break;
         case VK_RIGHT:  g_game_key &= ~KEY_RIGHT; break;
         case VK_RETURN:
-        case VK_SPACE:  g_game_key &= ~KEY_FIRE;  break;
+        case VK_SPACE:
         case 'Z':       g_game_key &= ~KEY_FIRE;  break;
         case 'X':       g_game_key &= ~KEY_SOFTL; break;
         case 'C':       g_game_key &= ~KEY_SOFTR; break;
@@ -1076,5 +1065,11 @@ void Platform_Sleep(int ms)
 
 int Platform_GetKey()
 {
-    return g_game_key;
+    /* Return union of currently-held keys and any keys pressed since last
+     * call (latch), then clear the latch.  This ensures tap events that
+     * complete between frames are never missed while held directional keys
+     * still register every frame until the game logic clears them. */
+    int k = g_game_key | g_key_pressed;
+    g_key_pressed = 0;
+    return k;
 }

@@ -1226,7 +1226,7 @@ void CpCanvas::Title()
     strDraw("P.o.N. PC Port", 60, 120);
     strDraw("Press ENTER to start", 30, 150);
 
-    if (key & 0x100000) {  /* Fire key */
+    if (key & KEY_FIRE) {  /* Fire key */
         scene = 3;  /* Go to field */
         key = 0;
     }
