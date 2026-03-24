@@ -324,6 +324,7 @@ public:
     /* Initialization */
     void ImgSet();
     void ImgSet2(int n);
+    void imgAddSet();
     void MldSet();
     void PASet();
     void TipSet();
@@ -338,6 +339,7 @@ public:
 
     /* Drawing */
     static void strDraw(const std::string &s, int x, int y);
+    void imgAddDraw(int n, int x, int y);
     static void drawImg(int n, int x, int y, bool flip);
     static void drawImg2(int n, int x, int y, int scale, int alpha);
     static void drawImg3(int img_no, int n, int x, int y, bool flip);

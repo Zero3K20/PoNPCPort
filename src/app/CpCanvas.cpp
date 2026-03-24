@@ -870,6 +870,7 @@ void CpCanvas::SetUp()
     fol_suu = 1;
     now_fol = 0;
     FolSet();
+    imgAddSet();   /* load all JAR images into image_add[] */
 
     scene = 0;
 }
@@ -900,15 +901,17 @@ void CpCanvas::ImgSet()
     }
     delete is0;
 
-    /* Try to load main image from JAR resource (fallback) */
-    InputStream *jar_img = Platform_JAR_OpenResource("data/new/img/0.gif");
-    if (jar_img && jar_img->len > 0) {
-        PlatImage *img = Platform_DecodeGIF(jar_img->buf, jar_img->len);
-        if (img) {
-            image[0] = img;
+    /* Load indexed images from JAR into image[] for direct sprite use */
+    for (int i2 = 0; i2 < 10; i2++) {
+        char path[64];
+        snprintf(path, sizeof(path), "data/new/img/%d.gif", i2);
+        InputStream *is = Platform_JAR_OpenResource(path);
+        if (is && is->len > 6) {
+            PlatImage *img = Platform_DecodeGIF(is->buf, is->len);
+            if (img) image[i2] = img;
         }
+        delete is;
     }
-    delete jar_img;
 
     /* Initialize palette slots */
     for (int i2 = 0; i2 < IMG_SUU; i2++) {
@@ -920,6 +923,37 @@ void CpCanvas::ImgSet2(int n)
 {
     /* Load additional images */
     (void)n;
+}
+
+/* =========================================================
+ * imgAddSet - load all JAR images into image_add[] (indices 0-9)
+ * Mirrors the original Java: loads data/new/img/{n}.gif from the JAR
+ * ========================================================= */
+void CpCanvas::imgAddSet()
+{
+    for (int i2 = 0; i2 < 10; i2++) {
+        if (image_add[i2]) continue;   /* already loaded */
+        char path[64];
+        snprintf(path, sizeof(path), "data/new/img/%d.gif", i2);
+        InputStream *is = Platform_JAR_OpenResource(path);
+        if (is && is->len > 6) {
+            PlatImage *img = Platform_DecodeGIF(is->buf, is->len);
+            if (img) image_add[i2] = img;
+        }
+        delete is;
+    }
+}
+
+/* =========================================================
+ * imgAddDraw - draw image_add[n] at screen position (x, y)
+ * Mirrors the original Java: g.drawImage(image_add[n], x, y)
+ * ========================================================= */
+void CpCanvas::imgAddDraw(int n, int x, int y)
+{
+    if (n < 0 || n >= 10) return;
+    PlatImage *img = image_add[n];
+    if (!img) return;
+    Platform_DrawImage(img, x, y, 0, 0, img->width, img->height);
 }
 
 /* =========================================================
@@ -1220,29 +1254,107 @@ void CpCanvas::NetData()
  * ========================================================= */
 void CpCanvas::Title()
 {
+    /* Black background */
     Platform_SetColor(Platform_MakeColor(0, 0, 0));
     Platform_FillRect(0, 0, GAMEN_X, GAMEN_Y);
-    Platform_SetColor(Platform_MakeColor(255, 255, 255));
-    strDraw("P.o.N. PC Port", 60, 120);
-    strDraw("Press ENTER to start", 30, 150);
 
-    if (key & KEY_FIRE) {  /* Fire key */
-        scene = 3;  /* Go to field */
+    /* Title screen image (image_add[2] = data/new/img/2.gif, 240x168) */
+    if (image_add[2]) {
+        imgAddDraw(2, 0, 0);
+        if (image_add[3])
+            imgAddDraw(3, 178, 123);
+    } else {
+        /* Fallback: draw title text */
+        Platform_SetColor(Platform_MakeColor(0, 100, 200));
+        Platform_FillRect(0, 0, GAMEN_X, 90);
+        Platform_SetColor(Platform_MakeColor(255, 255, 255));
+        strDraw("PHANTOM", 40, 20);
+        strDraw("OF NETWORK", 25, 45);
+        Platform_SetColor(Platform_MakeColor(200, 200, 0));
+        strDraw("CAPCOM 2009", 60, 70);
+    }
+
+    /* Bottom area: black strip for menu */
+    Platform_SetColor(Platform_MakeColor(0, 0, 0));
+    Platform_FillRect(0, 168, GAMEN_X, GAMEN_Y - 168);
+
+    /* Menu cursor */
+    Platform_SetColor(Platform_MakeColor(255, 255, 255));
+    strDraw(">", 15, 180 + mode * 20);
+
+    /* Menu items */
+    strDraw("GAME START", 30, 180);
+    strDraw("RETURN TO TITLE", 30, 200);
+
+    /* Navigate menu */
+    if ((key & KEY_UP) && !(okey & KEY_UP)) {
+        mode = (mode > 0) ? mode - 1 : 1;
+        key &= ~KEY_UP;
+    }
+    if ((key & KEY_DOWN) && !(okey & KEY_DOWN)) {
+        mode = (mode < 1) ? mode + 1 : 0;
+        key &= ~KEY_DOWN;
+    }
+
+    if (key & KEY_FIRE) {
+        if (mode == 0) {
+            /* Start new game: go to field map */
+            map_no = 0; map_x = 0; map_y = 0;
+            Audio(1, map_bgm);
+            scene = 3;   /* FieldMain */
+            mode = 0;
+        } else {
+            /* Return to splash screen */
+            scene = -2;
+            game_cnt = 0;
+            mode = 0;
+        }
         key = 0;
     }
 }
 
 void CpCanvas::Title2()
 {
-    /* Capcom/loading screen */
+    /* CAPCOM / Phantom of Network splash screen (scene = -2) */
+
+    /* Black background */
     Platform_SetColor(Platform_MakeColor(0, 0, 0));
     Platform_FillRect(0, 0, GAMEN_X, GAMEN_Y);
-    Platform_SetColor(Platform_MakeColor(255, 255, 255));
-    strDraw("P.o.N.", 90, 110);
-    strDraw("CAPCOM 2009", 70, 130);
 
-    if (game_cnt > 60 || (key != 0)) {
+    /* Title screen image (image_add[2] = data/new/img/2.gif, 240x168) */
+    if (image_add[2]) {
+        imgAddDraw(2, 0, 0);
+        if (image_add[3])
+            imgAddDraw(3, 178, 123);
+    } else {
+        /* Fallback: stylised text title */
+        Platform_SetColor(Platform_MakeColor(0, 100, 200));
+        Platform_FillRect(0, 0, GAMEN_X, 90);
+        Platform_SetColor(Platform_MakeColor(255, 255, 255));
+        strDraw("PHANTOM", 40, 20);
+        strDraw("OF NETWORK", 25, 45);
+        Platform_SetColor(Platform_MakeColor(200, 200, 0));
+        strDraw("CAPCOM 2009", 60, 70);
+    }
+
+    /* Bottom strip */
+    Platform_SetColor(Platform_MakeColor(0, 0, 0));
+    Platform_FillRect(0, 168, GAMEN_X, GAMEN_Y - 168);
+
+    /* Blinking "Press ENTER" prompt (10-frame period) */
+    if ((game_cnt / 10) % 2 == 0) {
+        Platform_SetColor(Platform_MakeColor(255, 255, 255));
+        strDraw("Press ENTER to start", 20, 195);
+    }
+
+    /* Copyright line */
+    Platform_SetColor(Platform_MakeColor(150, 150, 150));
+    strDraw("(C) CAPCOM 2009", 45, 218);
+
+    /* Advance to Title menu on any key press */
+    if (key & KEY_FIRE) {
         scene = 0;
+        mode = 0;
         key = 0;
     }
 }
