@@ -19,3 +19,13 @@ Release/
 *.exe
 *.obj
 ipch/
+
+# Build artifacts
+*.o
+*.obj
+Debug/
+Release/
+x64/
+*.user
+*.suo
+.vs/
