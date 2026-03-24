@@ -842,7 +842,8 @@ bool Platform_SP_Load()
         nullptr
     };
     for (int i = 0; paths[i]; i++) {
-        FILE *f = fopen(paths[i], "rb");
+        FILE *f = nullptr;
+        fopen_s(&f, paths[i], "rb");
         if (!f) continue;
         fseek(f, 0, SEEK_END);
         g_sp_size = ftell(f);
@@ -850,8 +851,8 @@ bool Platform_SP_Load()
         g_sp_data = new unsigned char[(size_t)g_sp_size];
         fread(g_sp_data, 1, (size_t)g_sp_size, f);
         fclose(f);
-        g_sp_file = fopen(paths[i], "r+b");
-        if (!g_sp_file) g_sp_file = fopen(paths[i], "rb");
+        fopen_s(&g_sp_file, paths[i], "r+b");
+        if (!g_sp_file) fopen_s(&g_sp_file, paths[i], "rb");
         return true;
     }
     return false;
@@ -960,7 +961,8 @@ bool Platform_JAR_Load()
 {
     const char *paths[] = {"PoN.jar", ".\\PoN.jar", "..\\PoN.jar", nullptr};
     for (int i = 0; paths[i]; i++) {
-        FILE *f = fopen(paths[i], "rb");
+        FILE *f = nullptr;
+        fopen_s(&f, paths[i], "rb");
         if (!f) continue;
         fseek(f, 0, SEEK_END);
         g_jar_size = ftell(f);

@@ -25,7 +25,7 @@ int Edit::Set(int n)
         break;
     }
     for (n2 = 0; n2 < n3; n2++) {
-        Edit::set[Edit::now_slot + n2] = n + (n5 + 1 << 8);
+        Edit::set[Edit::now_slot + n2] = n + ((n5 + 1) << 8);
     }
     Edit::set2[Edit::set_cnt] = n;
     ++set_cnt;

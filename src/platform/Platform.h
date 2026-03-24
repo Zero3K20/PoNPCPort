@@ -26,6 +26,15 @@
 #define MAX_IMAGES      64      /* PalettedImage slots */
 #define MAX_AUDIO       32      /* AudioPresenter slots */
 
+/* ---- Key bitmask constants (DoJa i-mode key mapping) ------------------- */
+#define KEY_UP          0x0001  /* VK_UP */
+#define KEY_DOWN        0x0002  /* VK_DOWN */
+#define KEY_LEFT        0x0004  /* VK_LEFT */
+#define KEY_RIGHT       0x0008  /* VK_RIGHT */
+#define KEY_FIRE        0x0010  /* VK_RETURN / VK_SPACE / Z */
+#define KEY_SOFTL       0x0020  /* Left soft key (X) */
+#define KEY_SOFTR       0x0040  /* Right soft key (C) */
+
 /* ---- Color type -------------------------------------------------------- */
 typedef COLORREF PlatColor;   /* 0x00BBGGRR */
 

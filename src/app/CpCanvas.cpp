@@ -1147,7 +1147,6 @@ void CpCanvas::ShSet(int n)
 {
     InputStream *is = JarGet(34);
     if (!is || is->len <= 0) { delete is; shop_syu = 2; return; }
-    unsigned char b4[4];
     shop_syu = 2;
     /* Fill sh_zai and sh_syu/sh_id/sh_kin arrays */
     delete is;

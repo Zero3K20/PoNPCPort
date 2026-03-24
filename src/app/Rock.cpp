@@ -350,7 +350,7 @@ void Rock::Action(int n)
     if (tip_no < 0) return;
     if (non_cnt > 0) return;
     if (non_cnt2 > 0) return;
-    if (move_flg != 0) { tmp_ata = n + tip_no << 2; return; }
+    if (move_flg != 0) { tmp_ata = (n + tip_no) << 2; return; }
     if (bas_no >= 0) { CpCanvas::ata[bas_no].init(); bas_no = -1; CpCanvas::key_cnt = 0; }
     int n2 = CpCanvas::waza[tip[Rock::tip_no]->waza_id]->move_id;
     AniSet(n2);
